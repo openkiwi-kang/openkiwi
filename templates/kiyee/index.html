@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<head>
+<link rel="icon" href="/static/image/favicon/OPENKIWI.png">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript">
+$(function () {
+$("a[role='menuitem").click(function () {
+$(".dropdown-toggle").text($(this).text());
+$(".dropdown-toggle").css("color", "white");
+})
+$("[data-addRole='nopresentation").click(function () {
+$(".dropdown-toggle").css("color", "grey");
+})
+})
+</script>
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+{%if wikiname %}
+<title>{{wikiname}}</title>
+{% else %}
+<title>openkiwi</title>
+{% endif %}
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="/static/css/bootstrap.css">
+
+<style>
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+{%if wikiname %}
+  <a class="navbar-brand" href="/">{{wikiname}}</a>
+{% else %}
+  <a class="navbar-brand" href="/">openkiwi</a>
+{% endif %}
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarColor03">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/RecentChanges">RecentChanges <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/RecentDiscuss">RecentDiscuss</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/random">random</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href='/user'>user</a>
+      </li>
+      {% if imageurl %}
+      <li class="nav-item">
+      <img src={{ imageurl }}>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href='/login'>login</a>
+      </li>
+      {% endif %}
+    </ul>
+    <form class="form-inline" method="POST">
+      <input class="form-control " type="text" placeholder="Search" name="Search">
+      <button class="btn btn-secondary my-2 my-sm-0" type="submit">
+      <img src="/static/image/icons/magnifying-glass-2x.png">Search
+      </button>
+    </form>
+  </div>
+</nav>
+<span class="glyphicon glyphicon-search"></span>
+{% block content %}
+<div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% block page_content %}{% endblock %}
+</div>
+{% endblock %}
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/static/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/static/js/bootstrap.min.js"></script>
+</body>
+</html>
