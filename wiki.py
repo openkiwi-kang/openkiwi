@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash
 import sqlite3
 import hashlib
@@ -5,6 +7,7 @@ import os
 import codecs
 import json
 import urllib
+import parser_kiwi from parsing_kiwi
 from datetime import datetime
 
 #loopstart
@@ -127,6 +130,26 @@ def gettime():
     return str(datetime.now())
 
 @app.route('/w/<pagename>')
-def pagerender():
+def pagerender(pagename):
+    if pagename == "":
+        return redirect(url_for('index'))
+    curs.execute("select data from pages where title = ?",[pagename])
+    if curs.fetchall():
+        curs.execute("select data from pages where title = ?",[pagename])
+        data = curs.fetchall()[0][0]
+        output = parser_kiwi(pagename,data)
+        if "login" in session and "email" in session and tokencheck(session['login']):
+            hashed_email = md5(str(session['email']))
+            imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+            return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output)
+        else:
+            return render_template(skin+'/index.html',wikiname = wiki,data = output)
+    else:
+        if "login" in session and "email" in session and tokencheck(session['login']):
+            hashed_email = md5(str(session['email']))
+            imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+            return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl)
+        else:
+            return render_template(skin+'/index.html',wikiname = wiki)
 #apprun
 app.run(host='0.0.0.0',port=80,debug=True)
