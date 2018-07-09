@@ -125,6 +125,8 @@ def tokencheck(token):
 
 def gettime():
     return str(datetime.now())
-#apprun
 
+@app.route('/w/<pagename>')
+def pagerender():
+#apprun
 app.run(host='0.0.0.0',port=80,debug=True)
