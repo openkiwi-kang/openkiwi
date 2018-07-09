@@ -51,8 +51,8 @@
 
     </ul>
     <form class="form-inline" method="POST">
-      <input class="form-control " type="text" placeholder="Search">
-      <button class="btn btn-secondary my-2 my-sm-0" type="submit" name="Search">Search</button>
+      <input class="form-control " type="text" placeholder="Search" name="Search">
+      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
     </form>
   </div>
 </nav>
@@ -75,6 +75,13 @@
     <h2>NO DATA</h2>
     <h2>404</h2>
     {% endif %}
+{% if editform %}
+<form method="POST">
+<textarea name="edit" rows="25" cols="80">{editform}</textarea>
+<br>
+<input type="submit">
+</form>
+{% endif %}
 </div>
 {% endblock %}
 

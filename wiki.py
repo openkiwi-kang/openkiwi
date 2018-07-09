@@ -154,5 +154,32 @@ def pagerender(pagename):
             return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl)
         else:
             return render_template(skin+'/index.html',wikiname = wiki)
+@app.route('/edit/<pagename>')
+def editpage(pagename):
+    if pagename == "":
+        return redirect(url_for('index'))
+    curs.execute("select data from pages where title = ?",[pagename])
+    if curs.fetchall():
+        curs.execute("select data from pages where title = ?",[pagename])
+        data = curs.fetchall()[0][0]
+    else:
+        data = "#None"
+    if "login" in session:
+        if "email" in session:
+            if tokencheck(session['login']):
+                hashed_email = md5(str(session['email']))
+                imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+                #print("user:"+str(tokencheck(session['login']))+":"+imageurl)
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,editform = data)
+            else:
+                return render_template(skin+'/index.html',wikiname = wiki,editform = data)
+        else:
+            return render_template(skin+'/index.html',wikiname = wiki,editform = data)
+    else:
+        return render_template(skin+'/index.html',wikiname = wiki,editform = data)
+@app.route('/edit/<pagename>',methods=['POST'])
+def edit(pagename):
+    data = request.form['edit']
+    curs.execute("update pages set data = ? where title = ?",(data,pagename))
 #apprun
 app.run(host='0.0.0.0',port=80,debug=True)
