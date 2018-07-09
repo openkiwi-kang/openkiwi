@@ -138,10 +138,13 @@ def pagerender(pagename):
         curs.execute("select data from pages where title = ?",[pagename])
         data = curs.fetchall()[0][0]
         output = parser_kiwi(pagename,data)
-        if "login" in session and "email" in session and tokencheck(session['login']):
-            hashed_email = md5(str(session['email']))
-            imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
-            return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output)
+        if "login" in session and "email" in session:
+            if tokencheck(session['login']):
+                hashed_email = md5(str(session['email']))
+                imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output)
+            else:
+                return render_template(skin+'/index.html',wikiname = wiki,data = output)
         else:
             return render_template(skin+'/index.html',wikiname = wiki,data = output)
     else:
