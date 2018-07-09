@@ -82,6 +82,13 @@ $(".dropdown-toggle").css("color", "grey");
     {% endfor %}
 
     {% block page_content %}{% endblock %}
+    
+    {% if data %}
+    {{data|safe}}
+    {% else %}
+    <h2>NO DATA</h2>
+    <h2>404</h2>
+    {% endif %}
 </div>
 {% endblock %}
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

@@ -6,10 +6,11 @@ import codecs
 import json
 import urllib
 from datetime import datetime
+
 #loopstart
 #setup
 skin = "kiyee"
-conn = sqlite3.connect('test.db',check_same_thread=False)
+conn = sqlite3.connect('test.db',check_same_thread=False,isolation_level = None)
 curs = conn.cursor()
 app = Flask(__name__)
 secretkey = "testsecretkey"
@@ -18,6 +19,9 @@ app.config["APPLICATION_ROOT"] = '/'
 wiki = "openkiwi"
 
 curs.execute('create table if not exists user(userid text, pw text, acl text, date text, email text, login text, salt text)')
+curs.execute('create table if not exists backlink(title text,back text)')
+curs.execute('create table if not exists pages(title text,data text)')
+
 conn.commit()
 def hashpass(password,salt):
     data = password + salt
