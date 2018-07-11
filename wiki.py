@@ -7,7 +7,7 @@ import os
 import codecs
 import json
 import urllib
-import parser_kiwi from parsing_kiwi
+from parsing_kiwi import parser_kiwi
 from datetime import datetime
 
 #loopstart
@@ -154,10 +154,8 @@ def pagerender(pagename):
             return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl)
         else:
             return render_template(skin+'/index.html',wikiname = wiki)
-@app.route('/edit/<pagename>')
+@app.route('/edit/<pagename>',methods=['GET'])
 def editpage(pagename):
-    if pagename == "":
-        return redirect(url_for('index'))
     curs.execute("select data from pages where title = ?",[pagename])
     if curs.fetchall():
         curs.execute("select data from pages where title = ?",[pagename])
@@ -177,9 +175,12 @@ def editpage(pagename):
             return render_template(skin+'/index.html',wikiname = wiki,editform = data)
     else:
         return render_template(skin+'/index.html',wikiname = wiki,editform = data)
+
 @app.route('/edit/<pagename>',methods=['POST'])
 def edit(pagename):
     data = request.form['edit']
     curs.execute("update pages set data = ? where title = ?",(data,pagename))
+    return redirect('/w/'+pagename)
+
 #apprun
 app.run(host='0.0.0.0',port=80,debug=True)
