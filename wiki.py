@@ -162,19 +162,24 @@ def editpage(pagename):
         data = curs.fetchall()[0][0]
     else:
         data = "#None"
+    form = """<form method="POST" id="editform">
+    <textarea name="edit" rows="25" cols="80">"""+data+"""</textarea>
+    <br>
+    </form>
+    <button type="submit" form="editform">Submit</button>"""
     if "login" in session:
         if "email" in session:
             if tokencheck(session['login']):
                 hashed_email = md5(str(session['email']))
                 imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
                 #print("user:"+str(tokencheck(session['login']))+":"+imageurl)
-                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,editform = data)
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = form)
             else:
-                return render_template(skin+'/index.html',wikiname = wiki,editform = data)
+                return render_template(skin+'/index.html',wikiname = wiki,data = form)
         else:
-            return render_template(skin+'/index.html',wikiname = wiki,editform = data)
+            return render_template(skin+'/index.html',wikiname = wiki,data = form)
     else:
-        return render_template(skin+'/index.html',wikiname = wiki,editform = data)
+        return render_template(skin+'/index.html',wikiname = wiki,data = form)
 
 @app.route('/edit/<pagename>',methods=['POST'])
 def edit(pagename):
