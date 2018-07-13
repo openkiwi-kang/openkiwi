@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash
 import sqlite3
 import hashlib
@@ -5,6 +7,7 @@ import os
 import codecs
 import json
 import urllib
+from parsing_kiwi import parser_kiwi
 from datetime import datetime
 
 #loopstart
@@ -125,6 +128,64 @@ def tokencheck(token):
 
 def gettime():
     return str(datetime.now())
-#apprun
 
+@app.route('/w/<pagename>')
+def pagerender(pagename):
+    if pagename == "":
+        return redirect(url_for('index'))
+    curs.execute("select data from pages where title = ?",[pagename])
+    if curs.fetchall():
+        curs.execute("select data from pages where title = ?",[pagename])
+        data = curs.fetchall()[0][0]
+        output = parser_kiwi(pagename,data)
+        if "login" in session and "email" in session:
+            if tokencheck(session['login']):
+                hashed_email = md5(str(session['email']))
+                imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output)
+            else:
+                return render_template(skin+'/index.html',wikiname = wiki,data = output)
+        else:
+            return render_template(skin+'/index.html',wikiname = wiki,data = output)
+    else:
+        if "login" in session and "email" in session and tokencheck(session['login']):
+            hashed_email = md5(str(session['email']))
+            imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+            return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl)
+        else:
+            return render_template(skin+'/index.html',wikiname = wiki)
+@app.route('/edit/<pagename>',methods=['GET'])
+def editpage(pagename):
+    curs.execute("select data from pages where title = ?",[pagename])
+    if curs.fetchall():
+        curs.execute("select data from pages where title = ?",[pagename])
+        data = curs.fetchall()[0][0]
+    else:
+        data = "#None"
+    form = """<form method="POST" id="editform">
+    <textarea name="edit" rows="25" cols="160">"""+data+"""</textarea>
+    <br>
+    </form>
+    <button type="submit" form="editform">Submit</button>"""
+    if "login" in session:
+        if "email" in session:
+            if tokencheck(session['login']):
+                hashed_email = md5(str(session['email']))
+                imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+                #print("user:"+str(tokencheck(session['login']))+":"+imageurl)
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = form)
+            else:
+                return render_template(skin+'/index.html',wikiname = wiki,data = form)
+        else:
+            return render_template(skin+'/index.html',wikiname = wiki,data = form)
+    else:
+        return render_template(skin+'/index.html',wikiname = wiki,data = form)
+
+@app.route('/edit/<pagename>',methods=['POST'])
+def edit(pagename):
+    data = request.form['edit']
+    curs.execute("update pages set data = ? where title = ?",(data,pagename))
+    return redirect('/w/'+pagename)
+
+#apprun
 app.run(host='0.0.0.0',port=80,debug=True)

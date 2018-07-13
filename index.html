@@ -17,7 +17,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-	
+
 <style>
 </style>
 </head>
@@ -44,24 +44,44 @@
       <li class="nav-item">
         <a class="nav-link" href='/user'>user</a>
       </li>
-      
+
       <li class="nav-item">
         <a class="nav-link" href='/login'>login</a>
       </li>
-      
+
     </ul>
     <form class="form-inline" method="POST">
-      <input class="form-control " type="text" placeholder="Search">
-      <button class="btn btn-secondary my-2 my-sm-0" type="submit" name="Search">Search</button>
+      <input class="form-control " type="text" placeholder="Search" name="Search">
+      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
     </form>
   </div>
 </nav>
 
 <div class="container">
-    
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
 
-    
-</div>
+    {% if editform %}
+    <form method="POST" id="editform">
+    <textarea name="edit" rows="25" cols="80">{editform}</textarea>
+    <br>
+    </form>
+    <button type="submit" form="editform">Submit</button>
+    {% else %}
+    <br>
+    {% endif %}
+    {% if data %}
+    {{data|safe}}
+    {% else %}
+    <h2>NO DATA</h2>
+    <h2>404</h2>
+    {% endif %}
+    </div>
+
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/static/js/jquery.min.js"></script>
