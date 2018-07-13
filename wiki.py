@@ -163,7 +163,7 @@ def editpage(pagename):
     else:
         data = "#None"
     form = """<form method="POST" id="editform">
-    <textarea name="edit" rows="25" cols="160">"""+data+"""</textarea>
+    <textarea name="edit" rows="20" cols="160">"""+data+"""</textarea>
     <br>
     </form>
     <button type="submit" form="editform">Submit</button>"""
@@ -184,7 +184,8 @@ def editpage(pagename):
 @app.route('/edit/<pagename>',methods=['POST'])
 def edit(pagename):
     data = request.form['edit']
-    curs.execute("update pages set data = ? where title = ?",(data,pagename))
+    curs.execute("delete from pages where title = (?)",[pagename])
+    curs.execute("insert into pages values (?,?)",(pagename,data))
     return redirect('/w/'+pagename)
 
 #apprun

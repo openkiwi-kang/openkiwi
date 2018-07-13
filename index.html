@@ -65,15 +65,6 @@
     </div>
     {% endfor %}
 
-    {% if editform %}
-    <form method="POST" id="editform">
-    <textarea name="edit" rows="25" cols="80">{editform}</textarea>
-    <br>
-    </form>
-    <button type="submit" form="editform">Submit</button>
-    {% else %}
-    <br>
-    {% endif %}
     {% if data %}
     {{data|safe}}
     {% else %}
