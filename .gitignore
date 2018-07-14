@@ -1,4 +1,4 @@
-test.db
-exemple.db
-example.db
+
+*.pyc
 *.db
+*.json
