@@ -1,5 +1,3 @@
-test.db
-exemple.db
-example.db
-*.db
+
 *.pyc
+*.db
