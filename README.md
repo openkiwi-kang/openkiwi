@@ -17,6 +17,7 @@ setting.json
         "port": "3306",  
         "id": "root",  
         "passwd": "1234"  
+        "db": "sqlite3 or mariadb or mysql"  
     }  
 
 *write likethis*

@@ -2,5 +2,6 @@
     "dbname": "test",
     "port": "3306",
     "id": "root",
-    "passwd": "1234"
+    "passwd": "1234",
+    "db": "mariadb"
 }

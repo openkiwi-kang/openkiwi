@@ -12,8 +12,13 @@ from datetime import datetime
 
 #loopstart
 #setup
+settingjson = open("setting.json","w+","utf-8")
+settingdic = json.load(settingjson)
+if settingdic[db] == mariadb or settingdic == mysql:
+    #pymysql~~
+elif settingdic[db] == sqlite3:
+    conn = sqlite3.connect(settingdic[dbname]+".db",check_same_thread=False,isolation_level = None)
 skin = "kiyee"
-conn = sqlite3.connect('test.db',check_same_thread=False,isolation_level = None)
 curs = conn.cursor()
 app = Flask(__name__)
 secretkey = "testsecretkey"
