@@ -163,7 +163,7 @@ def editpage(pagename):
     else:
         data = "#None"
     form = """<form method="POST" id="editform">
-    <textarea name="edit" rows="20" cols="160">"""+data+"""</textarea>
+    <textarea name="edit" wrap="soft" rows="20" cols="40">"""+data+"""</textarea>
     <br>
     </form>
     <button type="submit" form="editform">Submit</button>"""
