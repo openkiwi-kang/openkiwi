@@ -13,6 +13,7 @@ setting.json
 ===
 
     {  
+        "hostname": "127.0.0.1",
         "dbname": "test",  
         "port": "3306",  
         "id": "root",  

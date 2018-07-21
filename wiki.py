@@ -12,12 +12,19 @@ from datetime import datetime
 
 #loopstart
 #setup
-settingjson = open("setting.json","w+","utf-8")
+print(" * load wiki")
+settingjson = open("setting.json")
 settingdic = json.load(settingjson)
-if settingdic[db] == mariadb or settingdic == mysql:
-    #pymysql~~
-elif settingdic[db] == sqlite3:
-    conn = sqlite3.connect(settingdic[dbname]+".db",check_same_thread=False,isolation_level = None)
+if settingdic["db"] == "mariadb" or settingdic == "mysql":
+    conn = None
+    #conn = pymysql.connect(host=settingdic["hostname"], port=settingdic["port"], user=settingdic["id"], passwd=settingdic["passwd"], db=settingdic["dbname"],charset='utf8',autocommit=True)
+else:
+    if settingdic["db"] == 'sqlite3':
+        conn = sqlite3.connect(settingdic["dbname"]+".db",check_same_thread=False,isolation_level = None)
+    else:
+        print(">>>wrong setting error!")
+        conn = None
+
 skin = "kiyee"
 curs = conn.cursor()
 app = Flask(__name__)
