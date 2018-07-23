@@ -4,5 +4,5 @@
     "port": "3306",
     "id": "root",
     "passwd": "1234",
-    "db": "mariadb"
+    "db": "sqlite3"
 }
