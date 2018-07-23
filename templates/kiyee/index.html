@@ -15,6 +15,13 @@ $(".dropdown-toggle").css("color", "grey");
 })
 })
 </script>
+<style>
+.wikitext{
+    width: 95%;
+    margin: 20px;
+    word-wrap: break-word;
+}
+</style>
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 {%if wikiname %}
 <title>{{wikiname}}</title>
@@ -73,7 +80,7 @@ $(".dropdown-toggle").css("color", "grey");
 </nav>
 <span class="glyphicon glyphicon-search"></span>
 {% block content %}
-<div class="container">
+<div class="wikitext">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -82,7 +89,7 @@ $(".dropdown-toggle").css("color", "grey");
     {% endfor %}
 
     {% block page_content %}{% endblock %}
-    
+
     {% if data %}
     {{data|safe}}
     {% else %}

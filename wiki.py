@@ -9,7 +9,6 @@ import json
 import urllib
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
-
 #loopstart
 #setup
 print(" * load wiki")
@@ -166,6 +165,7 @@ def pagerender(pagename):
             return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl)
         else:
             return render_template(skin+'/index.html',wikiname = wiki)
+
 @app.route('/edit/<pagename>',methods=['GET'])
 def editpage(pagename):
     curs.execute("select data from pages where title = ?",[pagename])
@@ -175,7 +175,7 @@ def editpage(pagename):
     else:
         data = "#None"
     form = """<form method="POST" id="editform">
-    <textarea name="edit" wrap="soft" rows="20" cols="40">"""+data+"""</textarea>
+    <textarea name="edit" wrap="soft" rows="20" cols="40" style="width:90%;">"""+data+"""</textarea>
     <br>
     </form>
     <button type="submit" form="editform">Submit</button>"""
@@ -192,6 +192,12 @@ def editpage(pagename):
             return render_template(skin+'/index.html',wikiname = wiki,data = form)
     else:
         return render_template(skin+'/index.html',wikiname = wiki,data = form)
+
+@app.route('/w/<pagename>',methods=['POST'])
+def gotosearch_1(pagename):
+    keyword = request.form['Search']
+    print(keyword)
+    return redirect('/search/'+keyword)
 
 @app.route('/edit/<pagename>',methods=['POST'])
 def edit(pagename):
