@@ -9,20 +9,22 @@ import json
 import urllib
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
+try:
+    import pymysql
+except hh:
+    print("hh")
 #loopstart
 #setup
 print(" * load wiki")
 settingjson = open("setting.json")
 settingdic = json.load(settingjson)
-if settingdic["db"] == "mariadb" or settingdic == "mysql":
-    conn = None
-    #conn = pymysql.connect(host=settingdic["hostname"], port=settingdic["port"], user=settingdic["id"], passwd=settingdic["passwd"], db=settingdic["dbname"],charset='utf8',autocommit=True)
+if settingdic["db"] == "mariadb" or settingdic["db"] == "mysql":
+    conn = pymysql.connect(host=settingdic["hostname"], port=int(settingdic["port"]), user=settingdic["id"], passwd=settingdic["passwd"], db=settingdic["dbname"],charset='utf8',autocommit=True)
 else:
     if settingdic["db"] == 'sqlite3':
         conn = sqlite3.connect(settingdic["dbname"]+".db",check_same_thread=False,isolation_level = None)
     else:
         print(">>>wrong setting error!")
-        conn = None
 
 skin = "kiyee"
 curs = conn.cursor()
