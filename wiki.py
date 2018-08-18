@@ -9,10 +9,7 @@ import json
 import urllib
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
-try:
-    import pymysql
-except hh:
-    print("hh")
+
 #loopstart
 #setup
 print(" * load wiki")
