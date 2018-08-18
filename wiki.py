@@ -18,7 +18,7 @@ settingdic = json.load(settingjson)
 if settingdic["db"] == "mariadb" or settingdic["db"] == "mysql":
     conn = pymysql.connect(host=settingdic["hostname"], port=int(settingdic["port"]), user=settingdic["id"], passwd=settingdic["passwd"], db=settingdic["dbname"],charset='utf8',autocommit=True)
 else:
-    if settingdic["db"] == 'sqlite3':
+    if settingdic["db"] == 'sqlite3' or settingdic["db"] == 'sqlite':
         conn = sqlite3.connect(settingdic["dbname"]+".db",check_same_thread=False,isolation_level = None)
     else:
         print(">>>wrong setting error!")
