@@ -9,8 +9,13 @@ import json
 import urllib
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField
 
 #loopstart
+class LoginForm(FlaskForm):
+    username = StringField('username')
+    password = PasswordField('password')
 #setup
 print(" * load wiki")
 settingjson = open("setting.json")
@@ -66,7 +71,8 @@ def gotosearch():
 
 @app.route('/login')
 def login_form():
-    return render_template(skin+'/login.html')
+    form = LoginForm()
+    return render_template(skin+'/login.html',form=form)
 
 @app.route('/logout')
 def logout():
@@ -81,14 +87,19 @@ def logout():
 
 @app.route('/login', methods=['POST'])
 def login():
-    text = request.form['uname']
+    form = LoginForm()
+    text = form.username.data
     id = text
-    text = request.form['psw']
+    //print(id)
+    text = form.password.data
     password = text
+    //print(password)
     curs.execute("select salt from user where userid = (?)",[id])
-    salt = curs.fetchall()[0][0]
+    salt = str(curs.fetchall()[0][0])
+    //print(salt)
     curs.execute("select pw from user where userid = (?)",[id])
-    dbhash = curs.fetchall()[0][0]
+    dbhash = str(curs.fetchall()[0][0])
+    //print(dbhash)
     hash = hashpass(password,salt)
 
     if hash == dbhash:
