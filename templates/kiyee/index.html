@@ -71,7 +71,8 @@ $(".dropdown-toggle").css("color", "grey");
       {% endif %}
     </ul>
     <form class="form-inline" method="POST">
-      <input class="form-control " type="text" placeholder="Search" name="Search">
+      {{ form.csrf_token }}
+      {{ form.keyword }}
       <button class="btn btn-secondary my-2 my-sm-0" type="submit">
       <img src="/static/image/icons/magnifying-glass-2x.png">Search
       </button>

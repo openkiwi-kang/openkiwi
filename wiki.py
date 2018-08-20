@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python3
-from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash
+from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash,make_response
 import sqlite3
 import hashlib
 import os
@@ -11,11 +11,16 @@ from parsing_kiwi import parser_kiwi
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
+from wtforms.validators import InputRequired, Length, AnyOf
+from flask_wtf.csrf import CSRFProtect
 
 #loopstart
+
 class LoginForm(FlaskForm):
-    username = StringField('username')
-    password = PasswordField('password')
+    username = StringField('username',validators=[InputRequired('A username is required!')])
+    password = PasswordField('password',validators=[InputRequired('A password is required!')])
+class SearchForm(FlaskForm):
+    keyword = StringField('Search',validators=[InputRequired()])
 #setup
 print(" * load wiki")
 settingjson = open("setting.json")
@@ -35,6 +40,8 @@ secretkey = "testsecretkey"
 app.secret_key = secretkey
 app.config["APPLICATION_ROOT"] = '/'
 wiki = "openkiwi"
+csrf = CSRFProtect(app)
+csrf.init_app(app)
 
 curs.execute('create table if not exists user(userid text, pw text, acl text, date text, email text, login text, salt text)')
 curs.execute('create table if not exists backlink(title text,back text)')
@@ -49,24 +56,26 @@ def md5(email):
     return hashlib.md5(bytes(email, 'utf-8')).hexdigest()
 @app.route('/')
 def index():
+    form = SearchForm()
     if "login" in session:
         if "email" in session:
             if tokencheck(session['login']):
                 hashed_email = md5(str(session['email']))
                 imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
                 #print("user:"+str(tokencheck(session['login']))+":"+imageurl)
-                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl)
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,form = form)
             else:
-                return render_template(skin+'/index.html',wikiname = wiki)
+                return render_template(skin+'/index.html',wikiname = wiki,form = form)
         else:
-            return render_template(skin+'/index.html',wikiname = wiki)
+            return render_template(skin+'/index.html',wikiname = wiki,form = form)
     else:
-        return render_template(skin+'/index.html',wikiname = wiki)
+        return render_template(skin+'/index.html',wikiname = wiki,form = form)
 
 @app.route('/',methods=['POST'])
 def gotosearch():
-    keyword = request.form['Search']
-    print(keyword)
+    form = SearchForm()
+    keyword = form.keyword.data
+    #print(keyword)
     return redirect('/search/'+keyword)
 
 @app.route('/login')
@@ -129,7 +138,10 @@ def login():
 
 @app.route('/signup')
 def signup_form():
-    return render_template(skin+'/signup.html')
+
+    form = LoginForm()
+
+    return render_template(skin+'/signup.html',form=form)
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -144,7 +156,6 @@ def signup():
         #userid text, pw text, acl text, date text, email text, login text salt text
         curs.execute('insert into user(userid,pw,acl,date,email,login,salt) values (?,?,?,?,?,?,?)',(id,hash,"user",gettime(),email,logintoken,salt))
         session['login'] = logintoken
-        conn.close()
         return redirect(url_for('login'))
     else:
         return render_template(skin+'/error_passmatch-e.html')
@@ -163,6 +174,7 @@ def gettime():
 
 @app.route('/w/<pagename>')
 def pagerender(pagename):
+    form = SearchForm()
     if pagename == "":
         return redirect(url_for('index'))
     curs.execute("select data from pages where title = ?",[pagename])
@@ -174,21 +186,22 @@ def pagerender(pagename):
             if tokencheck(session['login']):
                 hashed_email = md5(str(session['email']))
                 imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
-                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output)
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output,form = form)
             else:
-                return render_template(skin+'/index.html',wikiname = wiki,data = output)
+                return render_template(skin+'/index.html',wikiname = wiki,data = output,form = form)
         else:
-            return render_template(skin+'/index.html',wikiname = wiki,data = output)
+            return render_template(skin+'/index.html',wikiname = wiki,data = output,form = form)
     else:
         if "login" in session and "email" in session and tokencheck(session['login']):
             hashed_email = md5(str(session['email']))
             imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
-            return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl)
+            return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,form = form)
         else:
-            return render_template(skin+'/index.html',wikiname = wiki)
+            return render_template(skin+'/index.html',wikiname = wiki,form = form)
 
 @app.route('/edit/<pagename>',methods=['GET'])
 def editpage(pagename):
+    form_ = SearchForm()
     curs.execute("select data from pages where title = ?",[pagename])
     if curs.fetchall():
         curs.execute("select data from pages where title = ?",[pagename])
@@ -197,35 +210,38 @@ def editpage(pagename):
         data = "#None"
     form = """<form method="POST" id="editform">
     <textarea name="edit" wrap="soft" rows="20" cols="40" style="width:90%;">"""+data+"""</textarea>
-    <br>
-    </form>
-    <button type="submit" form="editform">Submit</button>"""
+    <br>"""+str(form_.csrf_token)+"""</form><button type="submit" form="editform">Submit</button>"""
     if "login" in session:
         if "email" in session:
             if tokencheck(session['login']):
                 hashed_email = md5(str(session['email']))
                 imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
                 #print("user:"+str(tokencheck(session['login']))+":"+imageurl)
-                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = form)
+                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = form,form = form_)
             else:
-                return render_template(skin+'/index.html',wikiname = wiki,data = form)
+                return render_template(skin+'/index.html',wikiname = wiki,data = form,form = form_)
         else:
-            return render_template(skin+'/index.html',wikiname = wiki,data = form)
+            return render_template(skin+'/index.html',wikiname = wiki,data = form,form = form_)
     else:
-        return render_template(skin+'/index.html',wikiname = wiki,data = form)
+        return render_template(skin+'/index.html',wikiname = wiki,data = form,form = form_)
 
 @app.route('/w/<pagename>',methods=['POST'])
 def gotosearch_1(pagename):
-    keyword = request.form['Search']
+    form = SearchForm()
+    keyword = form.keyword.data
     print(keyword)
     return redirect('/search/'+keyword)
 
 @app.route('/edit/<pagename>',methods=['POST'])
 def edit(pagename):
-    data = request.form['edit']
-    curs.execute("delete from pages where title = (?)",[pagename])
-    curs.execute("insert into pages values (?,?)",(pagename,data))
-    return redirect('/w/'+pagename)
+    form = SearchForm()
+    if not form.keyword.data:
+        data = request.form['edit']
+        curs.execute("delete from pages where title = (?)",[pagename])
+        curs.execute("insert into pages values (?,?)",(pagename,data))
+        return redirect('/w/'+pagename)
+    if form.keyword.data:
+        return redirect('/search/'+form.keyword.data)
 
 #apprun
 app.run(host='0.0.0.0',port=5555,debug=True)
