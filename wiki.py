@@ -90,17 +90,28 @@ def login():
     form = LoginForm()
     text = form.username.data
     id = text
-    //print(id)
+    #print(id)
     text = form.password.data
     password = text
-    //print(password)
+    #print(password)
     curs.execute("select salt from user where userid = (?)",[id])
-    salt = str(curs.fetchall()[0][0])
-    //print(salt)
+    temp =curs.fetchall()
+    if temp:
+        salt = str(temp[0][0])
+    else:
+        salt = None
+    #print(salt)
     curs.execute("select pw from user where userid = (?)",[id])
-    dbhash = str(curs.fetchall()[0][0])
-    //print(dbhash)
-    hash = hashpass(password,salt)
+    temp =curs.fetchall()
+    if temp:
+        dbhash = str(temp[0][0])
+    else:
+        dbhash = None
+    #print(dbhash)
+    if dbhash and salt:
+        hash = hashpass(password,salt)
+    else:
+        hash = "dsaghjkfhhajhfkhdsakjhjdfhjkhdsajkfhjfhkja"
 
     if hash == dbhash:
         rand = codecs.encode(os.urandom(32), 'hex').decode()
