@@ -7,6 +7,7 @@ import os
 import codecs
 import json
 import urllib
+import pickle
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
 from flask_wtf import FlaskForm
