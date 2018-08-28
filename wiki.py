@@ -16,7 +16,7 @@ from wtforms.validators import InputRequired, Length, AnyOf
 from flask_wtf.csrf import CSRFProtect
 
 #loopstart
-
+cachebackuptxt = open('cacheback.txt', '+', encoding='utf8')
 class LoginForm(FlaskForm):
     username = StringField('username',validators=[InputRequired('A username is required!')])
     password = PasswordField('password',validators=[InputRequired('A password is required!')])
@@ -35,6 +35,8 @@ else:
         print(">>>wrong setting error!")
 
 skin = "kiyee"
+cachedb = sqlite3.connect(:memory:,check_same_thread=False,isolation_level = None)
+cache = cachedb.cursor()
 curs = conn.cursor()
 app = Flask(__name__)
 secretkey = "testsecretkey"
@@ -47,6 +49,7 @@ csrf.init_app(app)
 curs.execute('create table if not exists user(userid text, pw text, acl text, date text, email text, login text, salt text)')
 curs.execute('create table if not exists backlink(title text,back text)')
 curs.execute('create table if not exists pages(title text,data text)')
+curs.execute('create table if not exists acls(title text,read text,edit text,move text,delete text)')
 
 conn.commit()
 def hashpass(password,salt):
@@ -245,4 +248,7 @@ def edit(pagename):
         return redirect('/search/'+form.keyword.data)
 
 #apprun
+def cachebackup(sqlq):
+    cache.execute(sqlq)
+    cachebackuptxt.write(str(sqlq))
 app.run(host='0.0.0.0',port=5555,debug=True)
