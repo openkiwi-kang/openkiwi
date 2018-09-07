@@ -22,3 +22,25 @@ setting.json
     }  
 
 *write likethis*
+License
+===
+
+Bootstrap
+Author : Twitter, Inc
+Bootstrap is licensed under the MIT license.
+https://github.com/twbs/bootstrap
+
+OPEN ICONIC
+Author : useiconic.com
+Ionicons is licensed under the MIT license.
+https://useiconic.com/open
+
+KaTex
+Author : Khan Academy
+KaTeX is licensed under the MIT license.
+https://github.com/Khan/KaTeX
+
+ionicons
+Author : Drifty
+Ionicons is licensed under the MIT license.
+https://ionicons.com/

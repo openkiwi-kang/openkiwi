@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha256-uXNHy6FK52Pb83SmU45mVAg7YECmr9Lwwu1zOz31j5c=" crossorigin="anonymous" />
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha256-uXNHy6FK52Pb83SmU45mVAg7YECmr9Lwwu1zOz31j5c=" crossorigin="anonymous" />
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha256-34ADEQM6cIZ7chSRA07lN4aD5JM9IQoeIr2VamKDcT0=" crossorigin="anonymous"></script>
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/contrib/auto-render.min.js" integrity="sha256-HkMrKMLKQk4t1R2ofMAcLz72fWM2sshnx6215U+LgU0=" crossorigin="anonymous"></script>
-
+-->
+<script src="https://unpkg.com/ionicons@4.4.2/dist/ionicons.js"></script>
 <script>
 $(function () {
 $("a[role='menuitem").click(function () {
@@ -81,12 +82,11 @@ del {
       {{ form.csrf_token }}
       {{ form.keyword }}
       <button class="btn btn-secondary my-2 my-sm-0" type="submit">
-      <img src="/static/image/icons/magnifying-glass-2x.png">Search
+        <ion-icon src="/static/image/ionic/ios-search.svg"></ion-icon>Search
       </button>
     </form>
   </div>
 </nav>
-<span class="glyphicon glyphicon-search"></span>
 {% block content %}
 <div class="wikitext">
     {% for message in get_flashed_messages() %}

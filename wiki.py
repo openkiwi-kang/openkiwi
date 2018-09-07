@@ -14,9 +14,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, AnyOf
 from flask_wtf.csrf import CSRFProtect
+from tool import check_ip
 
 #loopstart
-cachebackuptxt = open('cacheback.txt', '+', encoding='utf8')
 class LoginForm(FlaskForm):
     username = StringField('username',validators=[InputRequired('A username is required!')])
     password = PasswordField('password',validators=[InputRequired('A password is required!')])
@@ -27,6 +27,7 @@ print(" * load wiki")
 settingjson = open("setting.json")
 settingdic = json.load(settingjson)
 if settingdic["db"] == "mariadb" or settingdic["db"] == "mysql":
+    import pymysql
     conn = pymysql.connect(host=settingdic["hostname"], port=int(settingdic["port"]), user=settingdic["id"], passwd=settingdic["passwd"], db=settingdic["dbname"],charset='utf8',autocommit=True)
 else:
     if settingdic["db"] == 'sqlite3' or settingdic["db"] == 'sqlite':
@@ -35,8 +36,6 @@ else:
         print(">>>wrong setting error!")
 
 skin = "kiyee"
-cachedb = sqlite3.connect(:memory:,check_same_thread=False,isolation_level = None)
-cache = cachedb.cursor()
 curs = conn.cursor()
 app = Flask(__name__)
 secretkey = "testsecretkey"
@@ -49,7 +48,7 @@ csrf.init_app(app)
 curs.execute('create table if not exists user(userid text, pw text, acl text, date text, email text, login text, salt text)')
 curs.execute('create table if not exists backlink(title text,back text)')
 curs.execute('create table if not exists pages(title text,data text)')
-curs.execute('create table if not exists acls(title text,read text,edit text,move text,delete text)')
+curs.execute('create table if not exists acls(title text,acl text)')
 
 conn.commit()
 def hashpass(password,salt):
@@ -178,7 +177,19 @@ def gettime():
 
 @app.route('/w/<pagename>')
 def pagerender(pagename):
+    print(request.headers["User-Agent"]+"  in  "+getip(request))
     form = SearchForm()
+    useracl = "ipuser"
+    if "login" in session:
+        if tokencheck(session['login']):
+            curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+            if curs.fetchall():
+                curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+                useracl = curs.fetchall()[0][0]
+            else:
+                useracl = "ipuser"
+    else:
+        useracl = "ipuser"
     if pagename == "":
         return redirect(url_for('index'))
     curs.execute("select data from pages where title = ?",[pagename])
@@ -186,15 +197,18 @@ def pagerender(pagename):
         curs.execute("select data from pages where title = ?",[pagename])
         data = curs.fetchall()[0][0]
         output = parser_kiwi(pagename,data)
-        if "login" in session and "email" in session:
-            if tokencheck(session['login']):
-                hashed_email = md5(str(session['email']))
-                imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
-                return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output,form = form)
+        if acltest(pagename,"read",useracl):
+            if "login" in session and "email" in session:
+                if tokencheck(session['login']):
+                    hashed_email = md5(str(session['email']))
+                    imageurl = "https://www.gravatar.com/avatar/"+hashed_email+"?s=40&d=retro"
+                    return render_template(skin+'/index.html',wikiname = wiki,imageurl = imageurl,data = output,form = form)
+                else:
+                    return render_template(skin+'/index.html',wikiname = wiki,data = output,form = form)
             else:
                 return render_template(skin+'/index.html',wikiname = wiki,data = output,form = form)
         else:
-            return render_template(skin+'/index.html',wikiname = wiki,data = output,form = form)
+            return "<h2>Access Denied</h2>"
     else:
         if "login" in session and "email" in session and tokencheck(session['login']):
             hashed_email = md5(str(session['email']))
@@ -247,8 +261,42 @@ def edit(pagename):
     if form.keyword.data:
         return redirect('/search/'+form.keyword.data)
 
+def getip(requests):
+    ip = None
+    try:
+        ip = str(requests.headers["True-Client-IP"])
+    except:
+        try:
+            ip = str(requests.headers["CF-Connecting-IP"])
+        except:
+            try:
+                ip = str(requests.headers["X-Real-IP"])
+            except:
+                try:
+                    ip = str(requests.headers["X-Forwarded-For"])
+                except:
+                    ip = str(requests.remote_addr)
+    return ip
+
+def acltest(page,job,useracl):
+    curs.execute("select acl from acls where title = (?)",[page])
+    acl = curs.fetchall()
+    if not acl:
+        return False
+        #print("acl")
+    else:
+        try:
+            acldic = json.loads(acl[0][0])
+            #print(acldic[useracl][job])
+            return acldic[useracl][job]
+        except:
+            print("Acl Error in %d"%page)
+            return False
+        
+        
+    
+
 #apprun
-def cachebackup(sqlq):
-    cache.execute(sqlq)
-    cachebackuptxt.write(str(sqlq))
-app.run(host='0.0.0.0',port=5555,debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0',port=5555,debug=True)
+
