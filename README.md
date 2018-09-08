@@ -21,7 +21,6 @@ setting.json
         "db": "sqlite3 or mariadb or mysql"  
     }  
 
-*write likethis*
 License
 ===
 
