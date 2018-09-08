@@ -49,6 +49,7 @@ curs.execute('create table if not exists user(userid text, pw text, acl text, da
 curs.execute('create table if not exists backlink(title text,back text)')
 curs.execute('create table if not exists pages(title text,data text)')
 curs.execute('create table if not exists acls(title text,acl text)')
+curs.execute('create table if not exists namespaceacl(namespace text,acl text)')
 
 conn.commit()
 def hashpass(password,salt):
@@ -284,11 +285,26 @@ def acltest(page,job,useracl):
     if not acl:
         return False
         #print("acl")
+        temp = page.count(":")
+        if temp == 0:
+            namespace = "default"
+        elif temp > 0:
+            namespace = page.split(":")[0]
+            if namespace == '':
+                namespace = "default"
+        curs.execute("select acl from namespaceacl where namespace = ?",[namespace])
+        temp = curs.patchall()
     else:
         try:
             acldic = json.loads(acl[0][0])
             #print(acldic[useracl][job])
-            return acldic[useracl][job]
+            if useracl in acldic:
+                if job in acldic[useracl]:
+                    return acldic[useracl][job]
+                else:
+                    return False
+            else:
+                return False
         except:
             print("Acl Error in %d"%page)
             return False
