@@ -294,6 +294,11 @@ def acltest(page,job,useracl):
                 namespace = "default"
         curs.execute("select acl from namespaceacl where namespace = ?",[namespace])
         temp = curs.patchall()
+        if temp:
+            temp = temp[0][0]
+            curs.execute("insert into acls(?,?)",[page,temp])
+        else:
+            False
     else:
         try:
             acldic = json.loads(acl[0][0])
