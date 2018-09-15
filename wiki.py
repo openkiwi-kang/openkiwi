@@ -8,6 +8,9 @@ import codecs
 import json
 import urllib
 import pickle
+import sys
+import time
+import config
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
 from flask_wtf import FlaskForm
@@ -16,6 +19,7 @@ from wtforms.validators import InputRequired, Length, AnyOf
 from flask_wtf.csrf import CSRFProtect
 from tool import check_ip
 
+
 #loopstart
 class LoginForm(FlaskForm):
     username = StringField('username',validators=[InputRequired('A username is required!')])
@@ -23,7 +27,6 @@ class LoginForm(FlaskForm):
 class SearchForm(FlaskForm):
     keyword = StringField('Search',validators=[InputRequired()])
 #setup
-print(" * load wiki")
 settingjson = open("setting.json")
 settingdic = json.load(settingjson)
 if settingdic["db"] == "mariadb" or settingdic["db"] == "mysql":
@@ -296,7 +299,7 @@ def acltest(page,job,useracl):
         temp = curs.patchall()
         if temp:
             temp = temp[0][0]
-            curs.execute("insert into acls(?,?)",[page,temp])
+            curs.execute("insert into acls values(?,?)",[page,temp])
         else:
             False
     else:
@@ -313,10 +316,25 @@ def acltest(page,job,useracl):
         except:
             print("Acl Error in %d"%page)
             return False
-        
-        
+
+def loadplugins():
+    plugin_list = os.listdir("./plugins")
+    temp = []
+    for filename in plugin_list:
+        if filename.endswith(".py"):
+            temp.append(filename)
+    
+    plugin_list = temp
+    for temp in plugin_list:
+        time.sleep(0.4)
+        sys.stdout.write(''' * "'''+str(temp)+'''" plugin detected!\n''')
     
 
+    
+
+
+    
+loadplugins()
 #apprun
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=5555,debug=True)
