@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python3
-from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash,make_response
+from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash,make_response,jsonify
 import sqlite3
 import hashlib
 import os
 import codecs
 import json
 import urllib
+import urllib.request
 import pickle
 import sys
 import time
-import config
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
 from flask_wtf import FlaskForm
@@ -53,6 +53,7 @@ curs.execute('create table if not exists backlink(title text,back text)')
 curs.execute('create table if not exists pages(title text,data text)')
 curs.execute('create table if not exists acls(title text,acl text)')
 curs.execute('create table if not exists namespaceacl(namespace text,acl text)')
+curs.execute('create table if not exists apikey(key text,user text,acl text)')
 
 conn.commit()
 def hashpass(password,salt):
@@ -223,6 +224,19 @@ def pagerender(pagename):
 
 @app.route('/edit/<pagename>',methods=['GET'])
 def editpage(pagename):
+    useracl = "ipuser"
+    if "login" in session:
+        if tokencheck(session['login']):
+            curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+            if curs.fetchall():
+                curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+                useracl = curs.fetchall()[0][0]
+            else:
+                useracl = "ipuser"
+    else:
+        useracl = "ipuser"
+    if not acltest(pagename,"edit",useracl):
+        return "<h2>Access Denied</h2>"
     form_ = SearchForm()
     curs.execute("select data from pages where title = ?",[pagename])
     if curs.fetchall():
@@ -256,6 +270,19 @@ def gotosearch_1(pagename):
 
 @app.route('/edit/<pagename>',methods=['POST'])
 def edit(pagename):
+    useracl = "ipuser"
+    if "login" in session:
+        if tokencheck(session['login']):
+            curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+            if curs.fetchall():
+                curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+                useracl = curs.fetchall()[0][0]
+            else:
+                useracl = "ipuser"
+    else:
+        useracl = "ipuser"
+    if not acltest(pagename,"edit",useracl):
+        return "<h2>Access Denied</h2>"
     form = SearchForm()
     if not form.keyword.data:
         data = request.form['edit']
@@ -264,6 +291,10 @@ def edit(pagename):
         return redirect('/w/'+pagename)
     if form.keyword.data:
         return redirect('/search/'+form.keyword.data)
+
+
+
+
 
 def getip(requests):
     ip = None
@@ -285,8 +316,9 @@ def getip(requests):
 def acltest(page,job,useracl):
     curs.execute("select acl from acls where title = (?)",[page])
     acl = curs.fetchall()
+    if useracl == "admin":
+        return True
     if not acl:
-        return False
         #print("acl")
         temp = page.count(":")
         if temp == 0:
@@ -296,12 +328,13 @@ def acltest(page,job,useracl):
             if namespace == '':
                 namespace = "default"
         curs.execute("select acl from namespaceacl where namespace = ?",[namespace])
-        temp = curs.patchall()
+        temp = curs.fetchall()
         if temp:
             temp = temp[0][0]
             curs.execute("insert into acls values(?,?)",[page,temp])
+            return acltest(page,job,useracl)
         else:
-            False
+            return False
     else:
         try:
             acldic = json.loads(acl[0][0])
@@ -330,7 +363,53 @@ def loadplugins():
         sys.stdout.write(''' * "'''+str(temp)+'''" plugin detected!\n''')
     
 
+@app.route("/api/<apitype>/<apikey>")
+def apiget(apitype,apikey):
+    curs.execute("select acl from apikey where key = (?)",[apikey])
+    apiacl = curs.fetchall()
+
+    if apiacl:
+        apiacl = apiacl[0][0]
+        apiacl = json.loads(apiacl)
+    else:
+        apiacl = {"GETRAW":False,"EDITRAW":False,"GETHTML":False,"GETUSER":False,"GETACL":False}
     
+    if apitype == "GETRAW":
+        if apiacl["GETRAW"]:
+            try:
+                pagename = request.args['page']
+                curs.execute("select data from pages where title = ?",[pagename])
+                pagedata = curs.fetchall()
+                curs.execute("select user from apikey where key = (?)",[apikey])
+                temp = curs.fetchall()
+                curs.execute("select acl from user where userid = (?)",[temp[0][0]])
+                if pagedata and acltest(pagename,"read",curs.fetchall()[0][0]):
+                    return jsonify({"success":True,"request":pagename,"data":pagedata[0][0]},indent=2)
+                else:
+                    return jsonify({"success":False},indent=2)
+            except:
+                return jsonify({"success":False},indent=2)
+        else:
+            return jsonify({"success":False},indent=2)
+    elif apitype == "GETHTML":
+        if apiacl["GETHTML"]:
+            try:
+                pagename = request.args['page']
+                curs.execute("select data from pages where title = ?",[pagename])
+                pagedata = curs.fetchall()
+                curs.execute("select user from apikey where key = (?)",[apikey])
+                temp = curs.fetchall()
+                curs.execute("select acl from user where userid = (?)",[temp[0][0]])
+                if pagedata and acltest(pagename,"read",curs.fetchall()[0][0]):
+                    return jsonify({"success":True,"request":pagename,"data":parser_kiwi(pagename,pagedata[0][0])},indent=2)
+                else:
+                    return jsonify({"success":False},indent=2)
+            except:
+                return jsonify({"success":False},indent=2)
+        else:
+            return jsonify({"success":False},indent=2)
+    
+
 
 
     
