@@ -8,7 +8,7 @@ def parser_kiwi(title,data):
     data = re.sub("&#x27;","'",data)
     data = textprocessing(data)
     #print(data)
-    output = "<h2>"+title+"</h2><br>"+"<p>"+data+"<p>"
+    output = "<h2>"+title+"</h2><br>"+"<p>"+data+"<p>"+"<br>"
     #output is output_html
     return output
 

@@ -54,6 +54,7 @@ curs.execute('create table if not exists pages(title text,data text)')
 curs.execute('create table if not exists acls(title text,acl text)')
 curs.execute('create table if not exists namespaceacl(namespace text,acl text)')
 curs.execute('create table if not exists apikey(key text,user text,acl text)')
+curs.execute('create table if not exists cache(title text,html text)')
 
 conn.commit()
 def hashpass(password,salt):
@@ -201,7 +202,13 @@ def pagerender(pagename):
     if curs.fetchall():
         curs.execute("select data from pages where title = ?",[pagename])
         data = curs.fetchall()[0][0]
-        output = parser_kiwi(pagename,data)
+        curs.execute('select html from cache where title = ?',[pagename])
+        if curs.fetchall():
+            curs.execute('select html from cache where title = ?',[pagename])
+            output = curs.fetchall()[0][0]
+        else:
+            output = parser_kiwi(pagename,data)
+            curs.execute('insert into cache values (?,?)',[pagename,output])
         if acltest(pagename,"read",useracl):
             if "login" in session and "email" in session:
                 if tokencheck(session['login']):
@@ -286,8 +293,11 @@ def edit(pagename):
     form = SearchForm()
     if not form.keyword.data:
         data = request.form['edit']
+        curs.execute("delete from cache where title = (?)",[pagename])
         curs.execute("delete from pages where title = (?)",[pagename])
         curs.execute("insert into pages values (?,?)",(pagename,data))
+        output = parser_kiwi(pagename,data)
+        curs.execute('insert into cache values (?,?)',[pagename,output])
         return redirect('/w/'+pagename)
     if form.keyword.data:
         return redirect('/search/'+form.keyword.data)
@@ -384,13 +394,15 @@ def apiget(apitype,apikey):
                 temp = curs.fetchall()
                 curs.execute("select acl from user where userid = (?)",[temp[0][0]])
                 if pagedata and acltest(pagename,"read",curs.fetchall()[0][0]):
-                    return jsonify({"success":True,"request":pagename,"data":pagedata[0][0]},indent=2)
+                    data = json.dumps({"success":True,"request":pagename,"data":pagedata[0][0]},indent=2)
                 else:
-                    return jsonify({"success":False},indent=2)
+                    data = json.dumps({"success":False},indent=2)
             except:
-                return jsonify({"success":False},indent=2)
+                data = json.dumps({"success":False},indent=2)
         else:
-            return jsonify({"success":False},indent=2)
+            data = json.dumps({"success":False},indent=2)
+        resp = app.response_class(response=data,status=200,mimetype='application/json')
+        return resp
     elif apitype == "GETHTML":
         if apiacl["GETHTML"]:
             try:
@@ -401,19 +413,25 @@ def apiget(apitype,apikey):
                 temp = curs.fetchall()
                 curs.execute("select acl from user where userid = (?)",[temp[0][0]])
                 if pagedata and acltest(pagename,"read",curs.fetchall()[0][0]):
-                    return jsonify({"success":True,"request":pagename,"data":parser_kiwi(pagename,pagedata[0][0])},indent=2)
+                    data = json.dumps({"success":True,"request":pagename,"data":parser_kiwi(pagename,pagedata[0][0])},indent=2)
                 else:
-                    return jsonify({"success":False},indent=2)
+                    data = json.dumps({"success":False},indent=2)
             except:
-                return jsonify({"success":False},indent=2)
+                data = json.dumps({"success":False},indent=2)
         else:
-            return jsonify({"success":False},indent=2)
+            data = json.dumps({"success":False},indent=2)
+        resp = app.response_class(response=data,status=200,mimetype='application/json')
+        return resp
     
-
-
+def searchengine(keyword):
+    curs.execute("select * from pages where title = (?)",[keyword])
+    fullmatch = curs.fetchall()
+    print(fullmatch)
+    return True
 
     
-loadplugins()
+#loadplugins()
+#searchengine("hi")
 #apprun
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=5555,debug=True)
