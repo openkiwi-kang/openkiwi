@@ -429,6 +429,15 @@ def searchengine(keyword):
     print(fullmatch)
     return True
 
+@app.route("/random")
+def title_random():
+    curs.execute("select title from pages order by random() limit 1")
+    data = curs.fetchall()
+    if data:
+        return redirect('/w/' + data[0][0])
+    else:
+        return redirect('/')
+
     
 #loadplugins()
 #searchengine("hi")
