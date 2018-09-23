@@ -1,4 +1,6 @@
-
-*.pyc
-*.db
 *.json
+*.db
+*.pyc
+venvflask
+venvstart.sh
+desktop.ini

@@ -75,6 +75,7 @@ span.psw {
   </div>
 
   <div class="container">
+    {{ form.csrf_token }}
     <label for="uname"><b>Username</b></label>
     <input type="text" placeholder="Enter Username" name="uname" required>
     <label for="email"><b>E-mail</b></label>
@@ -83,7 +84,7 @@ span.psw {
     <input type="password" placeholder="Enter Password" name="psw" required>
     <label for="pswck"><b>Password</b></label>
     <input type="password" placeholder="Password check" name="pswck" required>
-    
+
     <button type="submit">SIGNUP</button>
 </form>
 
