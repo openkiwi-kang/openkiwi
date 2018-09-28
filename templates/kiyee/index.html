@@ -9,19 +9,18 @@
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/contrib/auto-render.min.js" integrity="sha256-HkMrKMLKQk4t1R2ofMAcLz72fWM2sshnx6215U+LgU0=" crossorigin="anonymous"></script>
 -->
 <script src="https://unpkg.com/ionicons@4.4.2/dist/ionicons.js"></script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/static/js/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/static/js/bootstrap.min.js"></script>
 <script>
 $(function () {
-$("a[role='menuitem").click(function () {
-$(".dropdown-toggle").text($(this).text());
-$(".dropdown-toggle").css("color", "white");
-})
-$("[data-addRole='nopresentation").click(function () {
-$(".dropdown-toggle").css("color", "grey");
-})
+  $("a[role='menuitem").click(function () {$(".dropdown-toggle").text($(this).text());$(".dropdown-toggle").css("color", "white");});
+  $("[data-addRole='nopresentation").click(function () {$(".dropdown-toggle").css("color", "grey");});
 })
 </script>
 <style>
-.wikitext{
+.wiki-text{
     width: 95%;
     margin: 20px;
     word-wrap: break-word;
@@ -88,7 +87,7 @@ del {
   </div>
 </nav>
 {% block content %}
-<div class="wikitext">
+<div class="wiki-text">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -106,9 +105,6 @@ del {
     {% endif %}
 </div>
 {% endblock %}
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="/static/js/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="/static/js/bootstrap.min.js"></script>
+
 </body>
 </html>

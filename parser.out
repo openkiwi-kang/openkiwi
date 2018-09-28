@@ -1,0 +1,469 @@
+Created by PLY version 3.10 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    COMMENT
+    MACRO
+    TEXT_BOLD_ITALIC
+    TEXT_BOLD
+    TEXT_ITALIC
+    TEXT_CANCEL1
+    TEXT_CANCEL2
+    TEXT_UNDERLINE
+    TEXT_UPPER
+    TEXT_LOWER
+    TABLE
+    NAME
+    NUMBER
+
+Grammar
+
+Rule 0     S' -> wikidoc
+Rule 1     wikidoc -> wikidoc expression
+Rule 2     wikidoc -> expression
+Rule 3     expression -> paragraph
+Rule 4     expression -> SYNTAX_BRACE
+Rule 5     paragraph -> PH_6
+Rule 6     paragraph -> PH_5
+Rule 7     paragraph -> PH_4
+Rule 8     paragraph -> PH_3
+Rule 9     paragraph -> PH_2
+Rule 10    paragraph -> PH_1
+Rule 11    paragraph -> P_6
+Rule 12    paragraph -> P_5
+Rule 13    paragraph -> P_4
+Rule 14    paragraph -> P_3
+Rule 15    paragraph -> P_2
+Rule 16    paragraph -> P_1
+
+Terminals, with rules where they appear
+
+COMMENT              : 
+MACRO                : 
+NAME                 : 
+NUMBER               : 
+PH_1                 : 10
+PH_2                 : 9
+PH_3                 : 8
+PH_4                 : 7
+PH_5                 : 6
+PH_6                 : 5
+P_1                  : 16
+P_2                  : 15
+P_3                  : 14
+P_4                  : 13
+P_5                  : 12
+P_6                  : 11
+SYNTAX_BRACE         : 4
+TABLE                : 
+TEXT_BOLD            : 
+TEXT_BOLD_ITALIC     : 
+TEXT_CANCEL1         : 
+TEXT_CANCEL2         : 
+TEXT_ITALIC          : 
+TEXT_LOWER           : 
+TEXT_UNDERLINE       : 
+TEXT_UPPER           : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+expression           : 1 2
+paragraph            : 3
+wikidoc              : 1 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . wikidoc
+    (1) wikidoc -> . wikidoc expression
+    (2) wikidoc -> . expression
+    (3) expression -> . paragraph
+    (4) expression -> . SYNTAX_BRACE
+    (5) paragraph -> . PH_6
+    (6) paragraph -> . PH_5
+    (7) paragraph -> . PH_4
+    (8) paragraph -> . PH_3
+    (9) paragraph -> . PH_2
+    (10) paragraph -> . PH_1
+    (11) paragraph -> . P_6
+    (12) paragraph -> . P_5
+    (13) paragraph -> . P_4
+    (14) paragraph -> . P_3
+    (15) paragraph -> . P_2
+    (16) paragraph -> . P_1
+
+    SYNTAX_BRACE    shift and go to state 4
+    PH_6            shift and go to state 5
+    PH_5            shift and go to state 6
+    PH_4            shift and go to state 7
+    PH_3            shift and go to state 8
+    PH_2            shift and go to state 9
+    PH_1            shift and go to state 10
+    P_6             shift and go to state 11
+    P_5             shift and go to state 12
+    P_4             shift and go to state 13
+    P_3             shift and go to state 14
+    P_2             shift and go to state 15
+    P_1             shift and go to state 16
+
+    wikidoc                        shift and go to state 1
+    expression                     shift and go to state 2
+    paragraph                      shift and go to state 3
+
+state 1
+
+    (0) S' -> wikidoc .
+    (1) wikidoc -> wikidoc . expression
+    (3) expression -> . paragraph
+    (4) expression -> . SYNTAX_BRACE
+    (5) paragraph -> . PH_6
+    (6) paragraph -> . PH_5
+    (7) paragraph -> . PH_4
+    (8) paragraph -> . PH_3
+    (9) paragraph -> . PH_2
+    (10) paragraph -> . PH_1
+    (11) paragraph -> . P_6
+    (12) paragraph -> . P_5
+    (13) paragraph -> . P_4
+    (14) paragraph -> . P_3
+    (15) paragraph -> . P_2
+    (16) paragraph -> . P_1
+
+    SYNTAX_BRACE    shift and go to state 4
+    PH_6            shift and go to state 5
+    PH_5            shift and go to state 6
+    PH_4            shift and go to state 7
+    PH_3            shift and go to state 8
+    PH_2            shift and go to state 9
+    PH_1            shift and go to state 10
+    P_6             shift and go to state 11
+    P_5             shift and go to state 12
+    P_4             shift and go to state 13
+    P_3             shift and go to state 14
+    P_2             shift and go to state 15
+    P_1             shift and go to state 16
+
+    expression                     shift and go to state 17
+    paragraph                      shift and go to state 3
+
+state 2
+
+    (2) wikidoc -> expression .
+
+    SYNTAX_BRACE    reduce using rule 2 (wikidoc -> expression .)
+    PH_6            reduce using rule 2 (wikidoc -> expression .)
+    PH_5            reduce using rule 2 (wikidoc -> expression .)
+    PH_4            reduce using rule 2 (wikidoc -> expression .)
+    PH_3            reduce using rule 2 (wikidoc -> expression .)
+    PH_2            reduce using rule 2 (wikidoc -> expression .)
+    PH_1            reduce using rule 2 (wikidoc -> expression .)
+    P_6             reduce using rule 2 (wikidoc -> expression .)
+    P_5             reduce using rule 2 (wikidoc -> expression .)
+    P_4             reduce using rule 2 (wikidoc -> expression .)
+    P_3             reduce using rule 2 (wikidoc -> expression .)
+    P_2             reduce using rule 2 (wikidoc -> expression .)
+    P_1             reduce using rule 2 (wikidoc -> expression .)
+    $end            reduce using rule 2 (wikidoc -> expression .)
+
+
+state 3
+
+    (3) expression -> paragraph .
+
+    SYNTAX_BRACE    reduce using rule 3 (expression -> paragraph .)
+    PH_6            reduce using rule 3 (expression -> paragraph .)
+    PH_5            reduce using rule 3 (expression -> paragraph .)
+    PH_4            reduce using rule 3 (expression -> paragraph .)
+    PH_3            reduce using rule 3 (expression -> paragraph .)
+    PH_2            reduce using rule 3 (expression -> paragraph .)
+    PH_1            reduce using rule 3 (expression -> paragraph .)
+    P_6             reduce using rule 3 (expression -> paragraph .)
+    P_5             reduce using rule 3 (expression -> paragraph .)
+    P_4             reduce using rule 3 (expression -> paragraph .)
+    P_3             reduce using rule 3 (expression -> paragraph .)
+    P_2             reduce using rule 3 (expression -> paragraph .)
+    P_1             reduce using rule 3 (expression -> paragraph .)
+    $end            reduce using rule 3 (expression -> paragraph .)
+
+
+state 4
+
+    (4) expression -> SYNTAX_BRACE .
+
+    SYNTAX_BRACE    reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    PH_6            reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    PH_5            reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    PH_4            reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    PH_3            reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    PH_2            reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    PH_1            reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    P_6             reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    P_5             reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    P_4             reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    P_3             reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    P_2             reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    P_1             reduce using rule 4 (expression -> SYNTAX_BRACE .)
+    $end            reduce using rule 4 (expression -> SYNTAX_BRACE .)
+
+
+state 5
+
+    (5) paragraph -> PH_6 .
+
+    SYNTAX_BRACE    reduce using rule 5 (paragraph -> PH_6 .)
+    PH_6            reduce using rule 5 (paragraph -> PH_6 .)
+    PH_5            reduce using rule 5 (paragraph -> PH_6 .)
+    PH_4            reduce using rule 5 (paragraph -> PH_6 .)
+    PH_3            reduce using rule 5 (paragraph -> PH_6 .)
+    PH_2            reduce using rule 5 (paragraph -> PH_6 .)
+    PH_1            reduce using rule 5 (paragraph -> PH_6 .)
+    P_6             reduce using rule 5 (paragraph -> PH_6 .)
+    P_5             reduce using rule 5 (paragraph -> PH_6 .)
+    P_4             reduce using rule 5 (paragraph -> PH_6 .)
+    P_3             reduce using rule 5 (paragraph -> PH_6 .)
+    P_2             reduce using rule 5 (paragraph -> PH_6 .)
+    P_1             reduce using rule 5 (paragraph -> PH_6 .)
+    $end            reduce using rule 5 (paragraph -> PH_6 .)
+
+
+state 6
+
+    (6) paragraph -> PH_5 .
+
+    SYNTAX_BRACE    reduce using rule 6 (paragraph -> PH_5 .)
+    PH_6            reduce using rule 6 (paragraph -> PH_5 .)
+    PH_5            reduce using rule 6 (paragraph -> PH_5 .)
+    PH_4            reduce using rule 6 (paragraph -> PH_5 .)
+    PH_3            reduce using rule 6 (paragraph -> PH_5 .)
+    PH_2            reduce using rule 6 (paragraph -> PH_5 .)
+    PH_1            reduce using rule 6 (paragraph -> PH_5 .)
+    P_6             reduce using rule 6 (paragraph -> PH_5 .)
+    P_5             reduce using rule 6 (paragraph -> PH_5 .)
+    P_4             reduce using rule 6 (paragraph -> PH_5 .)
+    P_3             reduce using rule 6 (paragraph -> PH_5 .)
+    P_2             reduce using rule 6 (paragraph -> PH_5 .)
+    P_1             reduce using rule 6 (paragraph -> PH_5 .)
+    $end            reduce using rule 6 (paragraph -> PH_5 .)
+
+
+state 7
+
+    (7) paragraph -> PH_4 .
+
+    SYNTAX_BRACE    reduce using rule 7 (paragraph -> PH_4 .)
+    PH_6            reduce using rule 7 (paragraph -> PH_4 .)
+    PH_5            reduce using rule 7 (paragraph -> PH_4 .)
+    PH_4            reduce using rule 7 (paragraph -> PH_4 .)
+    PH_3            reduce using rule 7 (paragraph -> PH_4 .)
+    PH_2            reduce using rule 7 (paragraph -> PH_4 .)
+    PH_1            reduce using rule 7 (paragraph -> PH_4 .)
+    P_6             reduce using rule 7 (paragraph -> PH_4 .)
+    P_5             reduce using rule 7 (paragraph -> PH_4 .)
+    P_4             reduce using rule 7 (paragraph -> PH_4 .)
+    P_3             reduce using rule 7 (paragraph -> PH_4 .)
+    P_2             reduce using rule 7 (paragraph -> PH_4 .)
+    P_1             reduce using rule 7 (paragraph -> PH_4 .)
+    $end            reduce using rule 7 (paragraph -> PH_4 .)
+
+
+state 8
+
+    (8) paragraph -> PH_3 .
+
+    SYNTAX_BRACE    reduce using rule 8 (paragraph -> PH_3 .)
+    PH_6            reduce using rule 8 (paragraph -> PH_3 .)
+    PH_5            reduce using rule 8 (paragraph -> PH_3 .)
+    PH_4            reduce using rule 8 (paragraph -> PH_3 .)
+    PH_3            reduce using rule 8 (paragraph -> PH_3 .)
+    PH_2            reduce using rule 8 (paragraph -> PH_3 .)
+    PH_1            reduce using rule 8 (paragraph -> PH_3 .)
+    P_6             reduce using rule 8 (paragraph -> PH_3 .)
+    P_5             reduce using rule 8 (paragraph -> PH_3 .)
+    P_4             reduce using rule 8 (paragraph -> PH_3 .)
+    P_3             reduce using rule 8 (paragraph -> PH_3 .)
+    P_2             reduce using rule 8 (paragraph -> PH_3 .)
+    P_1             reduce using rule 8 (paragraph -> PH_3 .)
+    $end            reduce using rule 8 (paragraph -> PH_3 .)
+
+
+state 9
+
+    (9) paragraph -> PH_2 .
+
+    SYNTAX_BRACE    reduce using rule 9 (paragraph -> PH_2 .)
+    PH_6            reduce using rule 9 (paragraph -> PH_2 .)
+    PH_5            reduce using rule 9 (paragraph -> PH_2 .)
+    PH_4            reduce using rule 9 (paragraph -> PH_2 .)
+    PH_3            reduce using rule 9 (paragraph -> PH_2 .)
+    PH_2            reduce using rule 9 (paragraph -> PH_2 .)
+    PH_1            reduce using rule 9 (paragraph -> PH_2 .)
+    P_6             reduce using rule 9 (paragraph -> PH_2 .)
+    P_5             reduce using rule 9 (paragraph -> PH_2 .)
+    P_4             reduce using rule 9 (paragraph -> PH_2 .)
+    P_3             reduce using rule 9 (paragraph -> PH_2 .)
+    P_2             reduce using rule 9 (paragraph -> PH_2 .)
+    P_1             reduce using rule 9 (paragraph -> PH_2 .)
+    $end            reduce using rule 9 (paragraph -> PH_2 .)
+
+
+state 10
+
+    (10) paragraph -> PH_1 .
+
+    SYNTAX_BRACE    reduce using rule 10 (paragraph -> PH_1 .)
+    PH_6            reduce using rule 10 (paragraph -> PH_1 .)
+    PH_5            reduce using rule 10 (paragraph -> PH_1 .)
+    PH_4            reduce using rule 10 (paragraph -> PH_1 .)
+    PH_3            reduce using rule 10 (paragraph -> PH_1 .)
+    PH_2            reduce using rule 10 (paragraph -> PH_1 .)
+    PH_1            reduce using rule 10 (paragraph -> PH_1 .)
+    P_6             reduce using rule 10 (paragraph -> PH_1 .)
+    P_5             reduce using rule 10 (paragraph -> PH_1 .)
+    P_4             reduce using rule 10 (paragraph -> PH_1 .)
+    P_3             reduce using rule 10 (paragraph -> PH_1 .)
+    P_2             reduce using rule 10 (paragraph -> PH_1 .)
+    P_1             reduce using rule 10 (paragraph -> PH_1 .)
+    $end            reduce using rule 10 (paragraph -> PH_1 .)
+
+
+state 11
+
+    (11) paragraph -> P_6 .
+
+    SYNTAX_BRACE    reduce using rule 11 (paragraph -> P_6 .)
+    PH_6            reduce using rule 11 (paragraph -> P_6 .)
+    PH_5            reduce using rule 11 (paragraph -> P_6 .)
+    PH_4            reduce using rule 11 (paragraph -> P_6 .)
+    PH_3            reduce using rule 11 (paragraph -> P_6 .)
+    PH_2            reduce using rule 11 (paragraph -> P_6 .)
+    PH_1            reduce using rule 11 (paragraph -> P_6 .)
+    P_6             reduce using rule 11 (paragraph -> P_6 .)
+    P_5             reduce using rule 11 (paragraph -> P_6 .)
+    P_4             reduce using rule 11 (paragraph -> P_6 .)
+    P_3             reduce using rule 11 (paragraph -> P_6 .)
+    P_2             reduce using rule 11 (paragraph -> P_6 .)
+    P_1             reduce using rule 11 (paragraph -> P_6 .)
+    $end            reduce using rule 11 (paragraph -> P_6 .)
+
+
+state 12
+
+    (12) paragraph -> P_5 .
+
+    SYNTAX_BRACE    reduce using rule 12 (paragraph -> P_5 .)
+    PH_6            reduce using rule 12 (paragraph -> P_5 .)
+    PH_5            reduce using rule 12 (paragraph -> P_5 .)
+    PH_4            reduce using rule 12 (paragraph -> P_5 .)
+    PH_3            reduce using rule 12 (paragraph -> P_5 .)
+    PH_2            reduce using rule 12 (paragraph -> P_5 .)
+    PH_1            reduce using rule 12 (paragraph -> P_5 .)
+    P_6             reduce using rule 12 (paragraph -> P_5 .)
+    P_5             reduce using rule 12 (paragraph -> P_5 .)
+    P_4             reduce using rule 12 (paragraph -> P_5 .)
+    P_3             reduce using rule 12 (paragraph -> P_5 .)
+    P_2             reduce using rule 12 (paragraph -> P_5 .)
+    P_1             reduce using rule 12 (paragraph -> P_5 .)
+    $end            reduce using rule 12 (paragraph -> P_5 .)
+
+
+state 13
+
+    (13) paragraph -> P_4 .
+
+    SYNTAX_BRACE    reduce using rule 13 (paragraph -> P_4 .)
+    PH_6            reduce using rule 13 (paragraph -> P_4 .)
+    PH_5            reduce using rule 13 (paragraph -> P_4 .)
+    PH_4            reduce using rule 13 (paragraph -> P_4 .)
+    PH_3            reduce using rule 13 (paragraph -> P_4 .)
+    PH_2            reduce using rule 13 (paragraph -> P_4 .)
+    PH_1            reduce using rule 13 (paragraph -> P_4 .)
+    P_6             reduce using rule 13 (paragraph -> P_4 .)
+    P_5             reduce using rule 13 (paragraph -> P_4 .)
+    P_4             reduce using rule 13 (paragraph -> P_4 .)
+    P_3             reduce using rule 13 (paragraph -> P_4 .)
+    P_2             reduce using rule 13 (paragraph -> P_4 .)
+    P_1             reduce using rule 13 (paragraph -> P_4 .)
+    $end            reduce using rule 13 (paragraph -> P_4 .)
+
+
+state 14
+
+    (14) paragraph -> P_3 .
+
+    SYNTAX_BRACE    reduce using rule 14 (paragraph -> P_3 .)
+    PH_6            reduce using rule 14 (paragraph -> P_3 .)
+    PH_5            reduce using rule 14 (paragraph -> P_3 .)
+    PH_4            reduce using rule 14 (paragraph -> P_3 .)
+    PH_3            reduce using rule 14 (paragraph -> P_3 .)
+    PH_2            reduce using rule 14 (paragraph -> P_3 .)
+    PH_1            reduce using rule 14 (paragraph -> P_3 .)
+    P_6             reduce using rule 14 (paragraph -> P_3 .)
+    P_5             reduce using rule 14 (paragraph -> P_3 .)
+    P_4             reduce using rule 14 (paragraph -> P_3 .)
+    P_3             reduce using rule 14 (paragraph -> P_3 .)
+    P_2             reduce using rule 14 (paragraph -> P_3 .)
+    P_1             reduce using rule 14 (paragraph -> P_3 .)
+    $end            reduce using rule 14 (paragraph -> P_3 .)
+
+
+state 15
+
+    (15) paragraph -> P_2 .
+
+    SYNTAX_BRACE    reduce using rule 15 (paragraph -> P_2 .)
+    PH_6            reduce using rule 15 (paragraph -> P_2 .)
+    PH_5            reduce using rule 15 (paragraph -> P_2 .)
+    PH_4            reduce using rule 15 (paragraph -> P_2 .)
+    PH_3            reduce using rule 15 (paragraph -> P_2 .)
+    PH_2            reduce using rule 15 (paragraph -> P_2 .)
+    PH_1            reduce using rule 15 (paragraph -> P_2 .)
+    P_6             reduce using rule 15 (paragraph -> P_2 .)
+    P_5             reduce using rule 15 (paragraph -> P_2 .)
+    P_4             reduce using rule 15 (paragraph -> P_2 .)
+    P_3             reduce using rule 15 (paragraph -> P_2 .)
+    P_2             reduce using rule 15 (paragraph -> P_2 .)
+    P_1             reduce using rule 15 (paragraph -> P_2 .)
+    $end            reduce using rule 15 (paragraph -> P_2 .)
+
+
+state 16
+
+    (16) paragraph -> P_1 .
+
+    SYNTAX_BRACE    reduce using rule 16 (paragraph -> P_1 .)
+    PH_6            reduce using rule 16 (paragraph -> P_1 .)
+    PH_5            reduce using rule 16 (paragraph -> P_1 .)
+    PH_4            reduce using rule 16 (paragraph -> P_1 .)
+    PH_3            reduce using rule 16 (paragraph -> P_1 .)
+    PH_2            reduce using rule 16 (paragraph -> P_1 .)
+    PH_1            reduce using rule 16 (paragraph -> P_1 .)
+    P_6             reduce using rule 16 (paragraph -> P_1 .)
+    P_5             reduce using rule 16 (paragraph -> P_1 .)
+    P_4             reduce using rule 16 (paragraph -> P_1 .)
+    P_3             reduce using rule 16 (paragraph -> P_1 .)
+    P_2             reduce using rule 16 (paragraph -> P_1 .)
+    P_1             reduce using rule 16 (paragraph -> P_1 .)
+    $end            reduce using rule 16 (paragraph -> P_1 .)
+
+
+state 17
+
+    (1) wikidoc -> wikidoc expression .
+
+    SYNTAX_BRACE    reduce using rule 1 (wikidoc -> wikidoc expression .)
+    PH_6            reduce using rule 1 (wikidoc -> wikidoc expression .)
+    PH_5            reduce using rule 1 (wikidoc -> wikidoc expression .)
+    PH_4            reduce using rule 1 (wikidoc -> wikidoc expression .)
+    PH_3            reduce using rule 1 (wikidoc -> wikidoc expression .)
+    PH_2            reduce using rule 1 (wikidoc -> wikidoc expression .)
+    PH_1            reduce using rule 1 (wikidoc -> wikidoc expression .)
+    P_6             reduce using rule 1 (wikidoc -> wikidoc expression .)
+    P_5             reduce using rule 1 (wikidoc -> wikidoc expression .)
+    P_4             reduce using rule 1 (wikidoc -> wikidoc expression .)
+    P_3             reduce using rule 1 (wikidoc -> wikidoc expression .)
+    P_2             reduce using rule 1 (wikidoc -> wikidoc expression .)
+    P_1             reduce using rule 1 (wikidoc -> wikidoc expression .)
+    $end            reduce using rule 1 (wikidoc -> wikidoc expression .)
+

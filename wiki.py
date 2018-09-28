@@ -11,6 +11,7 @@ import urllib.request
 import pickle
 import sys
 import time
+import logging
 from parsing_kiwi import parser_kiwi
 from datetime import datetime
 from flask_wtf import FlaskForm
@@ -57,6 +58,9 @@ curs.execute('create table if not exists apikey(key text,user text,acl text)')
 curs.execute('create table if not exists cache(title text,html text)')
 
 conn.commit()
+def gettime():
+    return str(datetime.now())
+
 def hashpass(password,salt):
     data = password + salt
     hash = hashlib.sha512(bytes(data, 'utf-8')).hexdigest()
@@ -158,7 +162,8 @@ def signup():
     email = request.form['email']
     psw = request.form['psw']
     pswck = request.form['pswck']
-    if psw == pswck:
+    curs.execute('select userid from user where userid = (?)',[id])
+    if psw == pswck and not curs.fetchall():
         logintoken = codecs.encode(os.urandom(32), 'hex').decode()
         salt = codecs.encode(os.urandom(32), 'hex').decode()
         hash = hashpass(psw,salt)
@@ -178,8 +183,6 @@ def tokencheck(token):
     else:
         return False
 
-def gettime():
-    return str(datetime.now())
 
 @app.route('/w/<pagename>')
 def pagerender(pagename):
@@ -208,6 +211,7 @@ def pagerender(pagename):
             output = curs.fetchall()[0][0]
         else:
             output = parser_kiwi(pagename,data)
+            #print(output)
             curs.execute('insert into cache values (?,?)',[pagename,output])
         if acltest(pagename,"read",useracl):
             if "login" in session and "email" in session:
@@ -272,7 +276,7 @@ def editpage(pagename):
 def gotosearch_1(pagename):
     form = SearchForm()
     keyword = form.keyword.data
-    print(keyword)
+    #print(keyword)
     return redirect('/search/'+keyword)
 
 @app.route('/edit/<pagename>',methods=['POST'])
@@ -301,10 +305,6 @@ def edit(pagename):
         return redirect('/w/'+pagename)
     if form.keyword.data:
         return redirect('/search/'+form.keyword.data)
-
-
-
-
 
 def getip(requests):
     ip = None
@@ -373,7 +373,7 @@ def loadplugins():
         sys.stdout.write(''' * "'''+str(temp)+'''" plugin detected!\n''')
     
 
-@app.route("/api/<apitype>/<apikey>")
+@app.route("/apiv1/<apitype>/<apikey>")
 def apiget(apitype,apikey):
     curs.execute("select acl from apikey where key = (?)",[apikey])
     apiacl = curs.fetchall()
@@ -423,6 +423,55 @@ def apiget(apitype,apikey):
         resp = app.response_class(response=data,status=200,mimetype='application/json')
         return resp
     
+@app.route("/apiv1/<apitype>",methods=['POST'])
+def postapi(apitype):
+    if not request.json or not 'apikey' in request.json or not 'pagename' in request.json or not 'data' in request.json:
+        data = json.dumps({"success":False},indent=2)
+        resp = app.response_class(response=data,status=200,mimetype='application/json')
+        return resp
+    apikey = request.json["apikey"]
+    pagename = request.json["pagename"]
+    curs.execute("select acl from apikey where key = (?)",[apikey])
+    apiacl = curs.fetchall()
+    if apiacl:
+        apiacl = apiacl[0][0]
+        apiacl = json.loads(apiacl)
+    else:
+        apiacl = {"EDITRAW":False}
+    if apitype == "EDITRAW":
+        if not apiacl["EDITRAW"]:
+            data = json.dumps({"success":False},indent=2)
+            resp = app.response_class(response=data,status=200,mimetype='application/json')
+            return resp
+        else:
+            curs.execute('SELECT user FROM apikey WHERE key = (?)',[apikey])
+            temp = curs.fetchall()
+            if temp:
+                temp = temp[0][0]
+                curs.execute('select acl from user where userid = (?)',[temp])
+                useracl = curs.fatchall()[0][0]
+                if acltest(pagename,"edit",useracl) and acltest(pagename,"read",useracl):
+                    data = request.json[data]
+                    curs.execute("delete from cache where title = (?)",[pagename])
+                    curs.execute("delete from pages where title = (?)",[pagename])
+                    curs.execute("insert into pages values (?,?)",(pagename,data))
+                    output = parser_kiwi(pagename,data)
+                    curs.execute('insert into cache values (?,?)',[pagename,output])
+                    data = json.dumps({"success":True},indent=2)
+                else:
+                    data = json.dumps({"success":False},indent=2)
+                    resp = app.response_class(response=data,status=200,mimetype='application/json')
+                    return resp
+            else:
+                data = json.dumps({"success":False},indent=2)
+                resp = app.response_class(response=data,status=200,mimetype='application/json')
+                return resp
+    
+    resp = app.response_class(response=data,status=200,mimetype='application/json')
+    return resp
+
+
+
 def searchengine(keyword):
     curs.execute("select * from pages where title = (?)",[keyword])
     fullmatch = curs.fetchall()

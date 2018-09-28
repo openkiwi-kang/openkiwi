@@ -231,7 +231,7 @@ def p_paragraph(p):
                   | P_2
                   | P_1'''
     global output
-    output = output + "<h" + p[1][:1] + ">" + p[1][1:] + "</h" + p[1][:1] + "><br><hr>"
+    output = output + "<h" + p[1][:1] + ">" + p[1][1:] + "</h" + p[1][:1] + "><hr>"
 
 
 def p_error(p):
@@ -247,6 +247,8 @@ parser = yacc.yacc()     # Return parser object
 
 
 def parser_kiwi(title,input):
+    global output
+    output = ""
     data = html.escape(input)
     #data = re.sub('\r\n','\n',input)
     #data = re.sub('\n', '<br>', input)
@@ -260,7 +262,6 @@ def parser_kiwi(title,input):
     # lexer.input(input)
     # Run the yacc parser
     parser.parse(input,lexer=lexer)
-    global output
     return output
 
 #def textprocessing(data):
