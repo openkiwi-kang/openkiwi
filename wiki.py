@@ -255,9 +255,9 @@ def editpage(pagename):
         data = curs.fetchall()[0][0]
     else:
         data = "#None"
-    form = """<form method="POST" id="editform">
+    form = """<form method="POST" class="form-control" id="editform">
     <textarea name="edit" wrap="soft" rows="20" cols="40" style="width:90%;">"""+data+"""</textarea>
-    <br>"""+str(form_.csrf_token)+"""</form><button type="submit" form="editform">Submit</button>"""
+    <br>"""+str(form_.csrf_token)+"""</form><button type="submit" class="btn btn-primary" form="editform">Submit</button>"""
     if "login" in session:
         if "email" in session:
             if tokencheck(session['login']):
