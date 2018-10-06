@@ -13,22 +13,9 @@
 <script src="/static/js/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="/static/js/bootstrap.min.js"></script>
-<script>
-$(function () {
-  $("a[role='menuitem").click(function () {$(".dropdown-toggle").text($(this).text());$(".dropdown-toggle").css("color", "white");});
-  $("[data-addRole='nopresentation").click(function () {$(".dropdown-toggle").css("color", "grey");});
-})
-</script>
-<style>
-.wiki-text{
-    width: 95%;
-    margin: 20px;
-    word-wrap: break-word;
-}
-del {
-    color: #666;
-}
-</style>
+<link rel="stylesheet" href="/static/css/kiyee.css">
+<script async src="/static/js/kiyee.js"></script>
+
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 {%if wikiname %}
 <title>{{wikiname}}</title>

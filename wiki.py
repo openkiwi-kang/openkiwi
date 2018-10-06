@@ -13,7 +13,7 @@ import sys
 import time
 import logging
 from parsing_kiwi import parser_kiwi
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, AnyOf
@@ -63,7 +63,7 @@ def gettime():
 
 def hashpass(password,salt):
     data = password + salt
-    hash = hashlib.sha512(bytes(data, 'utf-8')).hexdigest()
+    hash = hashlib.sha384(bytes(hashlib.sha512(bytes(data, 'utf-8')).hexdigest(), 'utf-8')).hexdigest()
     return hash
 def md5(email):
     return hashlib.md5(bytes(email, 'utf-8')).hexdigest()
@@ -224,7 +224,8 @@ def pagerender(pagename):
             else:
                 return render_template(skin+'/index.html',wikiname = wiki,data = output,form = form)
         else:
-            return "<h2>Access Denied</h2>"
+            flash ('Access Denied','error')
+            return redirect(url_for('index'))
     else:
         if "login" in session and "email" in session and tokencheck(session['login']):
             hashed_email = md5(str(session['email']))
@@ -323,56 +324,6 @@ def getip(requests):
                     ip = str(requests.remote_addr)
     return ip
 
-def acltest(page,job,useracl):
-    curs.execute("select acl from acls where title = (?)",[page])
-    acl = curs.fetchall()
-    if useracl == "admin":
-        return True
-    if not acl:
-        #print("acl")
-        temp = page.count(":")
-        if temp == 0:
-            namespace = "default"
-        elif temp > 0:
-            namespace = page.split(":")[0]
-            if namespace == '':
-                namespace = "default"
-        curs.execute("select acl from namespaceacl where namespace = ?",[namespace])
-        temp = curs.fetchall()
-        if temp:
-            temp = temp[0][0]
-            curs.execute("insert into acls values(?,?)",[page,temp])
-            return acltest(page,job,useracl)
-        else:
-            return False
-    else:
-        try:
-            acldic = json.loads(acl[0][0])
-            #print(acldic[useracl][job])
-            if useracl in acldic:
-                if job in acldic[useracl]:
-                    return acldic[useracl][job]
-                else:
-                    return False
-            else:
-                return False
-        except:
-            print("Acl Error in %d"%page)
-            return False
-
-def loadplugins():
-    plugin_list = os.listdir("./plugins")
-    temp = []
-    for filename in plugin_list:
-        if filename.endswith(".py"):
-            temp.append(filename)
-    
-    plugin_list = temp
-    for temp in plugin_list:
-        time.sleep(0.4)
-        sys.stdout.write(''' * "'''+str(temp)+'''" plugin detected!\n''')
-    
-
 @app.route("/apiv1/<apitype>/<apikey>")
 def apiget(apitype,apikey):
     curs.execute("select acl from apikey where key = (?)",[apikey])
@@ -470,8 +421,6 @@ def postapi(apitype):
     resp = app.response_class(response=data,status=200,mimetype='application/json')
     return resp
 
-
-
 def searchengine(keyword):
     curs.execute("select * from pages where title = (?)",[keyword])
     fullmatch = curs.fetchall()
@@ -487,7 +436,83 @@ def title_random():
     else:
         return redirect('/')
 
+@app.route('/acl/<pagename>')
+def aclview(pagename):
+    useracl = "ipuser"
+    if "login" in session:
+        if tokencheck(session['login']):
+            curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+            if curs.fetchall():
+                curs.execute("select acl from user where userid = (?)",[tokencheck(session['login'])])
+                useracl = curs.fetchall()[0][0]
+            else:
+                useracl = "ipuser"
+    else:
+        useracl = "ipuser"
+    if not acltest(pagename,"viewacl",useracl):
+        flash ('Access Denied','error')
+        return redirect('/')
+    curs.execute("select acl from acls where title = (?)",[pagename])
+    acl = curs.fetchall()
+    if not acl:
+        flash ('Access Denied','error')
+        return redirect('/')
+    acl=acl[0][0]
+    acldic = json.loads(acl)
+    aclrank = [] 
+    for temp in acldic: 
+        aclrank.append(temp)
+    return str(aclrank)
+
+def acltest(page,job,useracl):
+    curs.execute("select acl from acls where title = (?)",[page])
+    acl = curs.fetchall()
+    if useracl == "admin":
+        return True
+    if not acl:
+        #print("acl")
+        temp = page.count(":")
+        if temp == 0:
+            namespace = "default"
+        elif temp > 0:
+            namespace = page.split(":")[0]
+            if namespace == '':
+                namespace = "default"
+        curs.execute("select acl from namespaceacl where namespace = ?",[namespace])
+        temp = curs.fetchall()
+        if temp:
+            temp = temp[0][0]
+            curs.execute("insert into acls values(?,?)",[page,temp])
+            return acltest(page,job,useracl)
+        else:
+            return False
+    else:
+        try:
+            acldic = json.loads(acl[0][0])
+            #print(acldic[useracl][job])
+            if useracl in acldic:
+                if job in acldic[useracl]:
+                    return acldic[useracl][job]
+                else:
+                    return False
+            else:
+                return False
+        except:
+            print("Acl Error in %d"%page)
+            return False
+
+def loadplugins():
+    plugin_list = os.listdir("./plugins")
+    temp = []
+    for filename in plugin_list:
+        if filename.endswith(".py"):
+            temp.append(filename)
     
+    plugin_list = temp
+    for temp in plugin_list:
+        time.sleep(0.4)
+        sys.stdout.write(''' * "'''+str(temp)+'''" plugin detected!\n''')
+
 #loadplugins()
 #searchengine("hi")
 #apprun
