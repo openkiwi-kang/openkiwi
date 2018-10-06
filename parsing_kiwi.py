@@ -38,7 +38,16 @@ tokens = (
         #'SYNTAX_WIKISTYLE',
         #'SYNTAX_HIGHLIGHT',
         #'SYNTAX_FOLDING',
+        'SYN_FONT_P_LBRACE',
+        'SYN_FONT_M_LBRACE',
+        'SYN_HTML_LBRACE',
+        'SYN_WIKI_LBRACE',
+        'SYN_HIGHLIGHT_LBRACE',
+        'SYN_FOLDING_LBRACE',
+        'SYN_FONT_COLOR_LBRACE',
         'SYNTAX_BRACE',
+        'TRI_LBRACE',
+        'TRI_RBRACE',
         # MACRO
         'MACRO',
         # PARAGRAPH SIZE
@@ -55,6 +64,8 @@ tokens = (
         'TEXT_LOWER',
         # TABLE
         'TABLE',
+        'HEX_COLOR',
+        'NAME_COLOR',
         'NAME',
         'NUMBER',
         )
@@ -87,8 +98,63 @@ def t_COMMENT(t):
 #    print(t)  
 
 def t_SYNTAX_BRACE(t):
-    r"(\{\{\{)[^#+-\{\}](.|\r|\n)*?(\}\}\})"
-    print(t)  
+    r"(\{\{\{)[^#+\-\{\}](?:.|\r|\n)*?(\}\}\})"
+    t.value = t.value[3:-3]
+    return t  
+
+def t_SYN_FONT_P_LBRACE(t):
+    r"\{\{\{+"
+    print(t)
+    global output
+    output = output + "={{{+="
+
+def t_SYN_FONT_M_LBRACE(t):
+    r"\{\{\{-"
+    print(t)
+    global output
+    output = output + "={{{-="
+
+def t_SYN_HTML_LBRACE(t):
+    r"\{\{\{\#\!(html|HTML|Html)"
+    print(t)
+    global output
+    output = output + "={{{#!html="
+
+def t_SYN_WIKI_LBRACE(t):
+    r"\{\{\{\#\!(wiki|WIKI|Wiki)"
+    print(t)
+    global output
+    output = output + "={{{#!wiki="
+
+def t_SYN_HIGHLIGHT_LBRACE(t):
+    r"\{\{\{\#\!(syntax|SYNTAX|Syntax)"
+    print(t)
+    global output
+    output = output + "={{{#!highlight="
+
+def t_SYN_FOLDING_LBRACE(t):
+    r"\{\{\{\#\!(folding|FOLDING|Folding)"
+    print(t)
+    global output
+    output = output + "={{{#!folding="
+
+def t_SYN_FONT_COLOR_LBRACE(t):
+    r"\{\{\{\#"
+    print(t)
+    global output
+    output = output + "={{{#="
+
+def t_TRI_LBRACE(t):
+    r"\{\{\{"
+    print(t)
+    global output
+    output = output + "={{{="
+
+def t_TRI_RBRACE(t):
+    r"\}\}\}"
+    print(t)
+    global output
+    output = output + "=}}}="
 
 def t_PH_6(t):
     r"[=]{6}[#]\s.*?\s[#][=]{6}"
@@ -178,6 +244,30 @@ def t_TABLE(t):
     r"[|]{2}.+[|]{2}"
     return t
 
+def t_HEX_COLOR(t):
+    r"\#[0-9a-fA-F]{6}"
+    t.value = "#" + t.value
+    return t
+
+def t_NAME_COLOR(t):
+    r'''(?:WHITE|White|white|
+        SILVER|Silver|silver|
+        GRAY|Gray|gray|
+        BLACK|Black|black|
+        RED|Red|red|
+        MAROON|Maroon|maroon|
+        YELLOW|Yellow|yellow|
+        OLIVE|Olive|olive|
+        LIME|Lime|lime|
+        GREEN|Green|green|
+        AQUA|Aqua|aqua|
+        TEAL|Teal|teal|
+        BLUE|Blue|blue|
+        NAVY|Navy|navy|
+        PUCHSIA|Puchsia|puchsia|
+        PURPLE|Purple|purple)'''
+    return t
+
 t_NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
 
 def t_NUMBER(t):
@@ -211,7 +301,63 @@ def p_wikidoc(p):
 
 def p_expression(p):
     '''expression : paragraph
-                  | SYNTAX_BRACE'''
+                  | text_effect
+                  | no_markup_expression
+                  | font_p_expression
+                  | font_m_expression
+                  | html_expression
+                  | wiki_expression
+                  | highlight_expression
+                  | folding_expression
+                  | font_color_expression
+                  | brace_expression'''
+
+def p_no_markup_expression(p):
+    '''no_markup_expression : SYNTAX_BRACE'''
+    global output
+    output = output + "\n<code>" + p[1] + "<\\code>\n"
+
+def p_brace_expression(p):
+    '''brace_expression : TRI_LBRACE expression TRI_RBRACE'''
+    global output
+    output = output + "\n<brace_expression>" + p[2] + "<\\brace_expression>\n"
+
+def p_font_p_expression(p):
+    '''font_p_expression : SYN_FONT_P_LBRACE NUMBER expression TRI_RBRACE'''
+    global output
+    output = output + "\n<font_p_expression>" + p[2] + "<\\font_p_expression>\n"
+
+def p_font_m_expression(p):
+    '''font_m_expression : SYN_FONT_M_LBRACE NUMBER expression TRI_RBRACE'''
+    global output
+    output = output + "\n<font_m_expression>" + p[2] + p[3] + "<\\font_m_expression>\n"
+
+def p_html_expression(p):
+    '''html_expression : SYN_HTML_LBRACE expression TRI_RBRACE'''
+    global output
+    output = output + "\n<html_style_expression>" + p[2] + "<\\html_style_expression>\n"
+
+def p_wiki_expression(p):
+    '''wiki_expression : SYN_WIKI_LBRACE expression TRI_RBRACE'''
+    global output
+    output = output + "\n<wiki_style_expression>" + p[2] + "<\\wiki_style_expression>\n"
+
+def p_highlight_expression(p):
+    '''highlight_expression : SYN_HIGHLIGHT_LBRACE expression TRI_RBRACE'''
+    global output
+    output = output + "\n<highlight_expression>" + p[2] + "<\\highlight_expression>\n"
+
+def p_folding_expression(p):
+    '''folding_expression : SYN_FOLDING_LBRACE expression TRI_RBRACE'''
+    global output
+    output = output + "\n<folding_expression>" + p[2] + "<\\folding_expression>\n"
+
+def p_font_color_expression(p):
+    '''font_color_expression : SYN_FONT_COLOR_LBRACE NAME_COLOR expression TRI_RBRACE
+                            | SYN_FONT_COLOR_LBRACE HEX_COLOR expression TRI_RBRACE'''
+    global output
+    output = output + "\n<font_color_expression>" + p[2] + p[3] + "<\\font_color_expression>\n"
+
 
 #def p_syntax_brace(p):
 #    '''syntax_brace : LBRACE syntax_brace RBRACE
@@ -231,8 +377,19 @@ def p_paragraph(p):
                   | P_2
                   | P_1'''
     global output
-    output = output + "<h" + p[1][:1] + ">" + p[1][1:] + "</h" + p[1][:1] + "><hr>"
+    output = output + "<h" + p[1][:1] + ">" + p[1][1:] + "</h" + p[1][:1] + "><br><hr>"
 
+def p_text_effect(p):
+    '''text_effect : TEXT_BOLD_ITALIC
+                    | TEXT_BOLD
+                    | TEXT_ITALIC
+                    | TEXT_CANCEL1
+                    | TEXT_CANCEL2
+                    | TEXT_UNDERLINE
+                    | TEXT_UPPER
+                    | TEXT_LOWER'''
+    global output
+    output = output + p[1]
 
 def p_error(p):
     if p:
