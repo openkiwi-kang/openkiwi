@@ -48,7 +48,7 @@ app.config["APPLICATION_ROOT"] = '/'
 wiki = "openkiwi"
 csrf = CSRFProtect(app)
 csrf.init_app(app)
-
+#logging.basicConfig(filename='./logs/debug.log',level=logging.DEBUG)
 curs.execute('create table if not exists user(userid text, pw text, acl text, date text, email text, login text, salt text)')
 curs.execute('create table if not exists backlink(title text,back text)')
 curs.execute('create table if not exists pages(title text,data text)')
@@ -186,6 +186,7 @@ def tokencheck(token):
 
 @app.route('/w/<pagename>')
 def pagerender(pagename):
+    #logging.debug(request.headers["User-Agent"]+"  in  "+getip(request))
     print(request.headers["User-Agent"]+"  in  "+getip(request))
     form = SearchForm()
     useracl = "ipuser"
