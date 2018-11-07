@@ -1,15 +1,15 @@
-OPENKIWI
+**OPENKIWI**
 ===
 
 The wiki engine has full customizable  
 
-howtouse  
+**howtouse**  
 ===
 
     pip install -r requirements.txt  
-    sudo python3 wiki.py  
+    sudo python3 wiki.py 
 
-setting.json
+**setting.json**
 ===
 
     {  
@@ -23,25 +23,30 @@ setting.json
         "parser": "parsing_kiwi"
     }  
 
-License
+**License**
 ===
 
-Bootstrap
+**Bootstrap**
 Author : Twitter, Inc
 Bootstrap is licensed under the MIT license.
 https://github.com/twbs/bootstrap
 
-OPEN ICONIC
+**OPENICONIC**
 Author : useiconic.com
 Ionicons is licensed under the MIT license.
 https://useiconic.com/open
 
-KaTex
+**KaTex**
 Author : Khan Academy
 KaTeX is licensed under the MIT license.
 https://github.com/Khan/KaTeX
 
-ionicons
+**ionicons**
 Author : Drifty
 Ionicons is licensed under the MIT license.
 https://ionicons.com/
+
+**DEV**
+===
+- [Blog](https://openkiwi-kang.github.io)
+- [Documentation](https://openkiwi-kang.github.io/documentation)
