@@ -18,7 +18,9 @@ setting.json
         "port": "3306",  
         "id": "root",  
         "passwd": "1234"  
-        "db": "sqlite3 or mariadb or mysql"  
+        "db": "sqlite3 or mariadb or mysql",
+        "secretkey": "write your secret key like lxGtkTeLoU7dG0isFk5esh5xWJc7n9AzxAs3PQ0ZQcq9CprfYPrxifYPiEAMULiFdLOVXi7r1c",
+        "parser": "parsing_kiwi"
     }  
 
 License
