@@ -4,5 +4,7 @@
     "port": "3306",
     "id": "root",
     "passwd": "1234",
-    "db": "sqlite3"
+    "db": "sqlite3",
+    "secretkey": "testforsecret",
+    "parser": "parsing_kiwi"
 }

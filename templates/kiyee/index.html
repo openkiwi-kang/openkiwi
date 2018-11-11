@@ -3,7 +3,7 @@
 {% if userhead %}
 {{userhead}}
 {% endif %}
-<link rel="icon" href="/static/image/favicon/OPENKIWI.png">
+<link rel="icon" href="/statics/image/favicon/OPENKIWI.png">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,12 +13,14 @@
 -->
 <script src="https://unpkg.com/ionicons@4.4.2/dist/ionicons.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="/static/js/jquery.min.js"></script>
+<script src="/statics/js/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="/static/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="/static/css/kiyee.css">
-<script async src="/static/js/kiyee.js"></script>
-
+<script src="/statics/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/statics/css/kiyee.css">
+{%if editer%}
+<script src="//cdn.ckeditor.com/4.10.1/full/ckeditor.js"></script>
+{%endif%}
+<script async src="/statics/js/kiyee.js"></script>
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 {%if wikiname %}
 <title>{{wikiname}}</title>
@@ -27,12 +29,12 @@
 {% endif %}
 
 <!-- Bootstrap -->
-<link rel="stylesheet" href="/static/css/bootstrap.css">
+<link rel="stylesheet" href="/statics/css/bootstrap.css">
 
 <style>
 </style>
 </head>
-<body>
+<body style="overflow-x:hidden;">
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 {%if wikiname %}
   <a class="navbar-brand" href="/">{{wikiname}}</a>
@@ -71,7 +73,7 @@
       {{ form.csrf_token }}
       {{ form.keyword }}
       <button class="btn btn-secondary my-2 my-sm-0" type="submit">
-        <ion-icon src="/static/image/ionic/ios-search.svg"></ion-icon>Search
+        <ion-icon src="/statics/image/ionic/ios-search.svg"></ion-icon>Search
       </button>
     </form>
   </div>
@@ -85,13 +87,12 @@
     </div>
     {% endfor %}
 
-    {% block page_content %}{% endblock %}
+    {% endblock %}
+    {% block page_content %}
 
     {% if data %}
     {{data|safe}}
     {% else %}
-    <h2>NO DATA</h2>
-    <h2>404</h2>
     {% endif %}
 </div>
 {% endblock %}

@@ -1,3 +1,5 @@
+![image](	https://img.shields.io/github/downloads-pre/openkiwi-kang/openkiwi/total.svg)
+
 **OPENKIWI**
 ===
 
