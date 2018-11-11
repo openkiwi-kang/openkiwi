@@ -1,4 +1,5 @@
 ![image](	https://img.shields.io/github/downloads-pre/openkiwi-kang/openkiwi/total.svg)
+[![Build Status](https://travis-ci.org/openkiwi-kang/openkiwi.svg?branch=DEV)](https://travis-ci.org/openkiwi-kang/openkiwi)
 
 **OPENKIWI**
 ===
