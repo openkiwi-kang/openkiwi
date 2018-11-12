@@ -586,7 +586,7 @@ def image_host(file):
         return abort(404)
 @app.after_request
 def headercontrol(response):
-    response.headers['Cache-Control'] = 'max-age = 20'
+    response.headers['Cache-Control'] = 'max-age = '+str(60*60*24)
     response.headers['Server'] = 'nginx'
     return response
 
