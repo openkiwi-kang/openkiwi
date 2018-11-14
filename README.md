@@ -1,6 +1,5 @@
 [![image](	https://img.shields.io/github/downloads-pre/openkiwi-kang/openkiwi/total.svg)](https://github.com/openkiwi-kang/openkiwi/releases)
 [![Build Status](https://travis-ci.org/openkiwi-kang/openkiwi.svg?branch=DEV)](https://travis-ci.org/openkiwi-kang/openkiwi)
-[![Coverage Status](https://coveralls.io/repos/github/openkiwi-kang/openkiwi/badge.svg?branch=DEV)](https://coveralls.io/github/openkiwi-kang/openkiwi?branch=DEV)
 
 **OPENKIWI**
 ===
