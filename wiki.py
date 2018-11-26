@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python3
-from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash,make_response,jsonify,abort
+from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,flash,make_response,jsonify,abort,current_app
 import sqlite3
 import hashlib
 import os
@@ -11,10 +11,11 @@ import urllib.request
 import pickle
 import sys
 import time
-import logging
+from functools import wraps
+#import logging
 import difflib
 #from parsing_kiwi import parser_kiwi
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone , date
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, AnyOf
@@ -83,6 +84,25 @@ pagelist = pagelisttemp
 print(" * load finish")
 def gettime():
     return str(datetime.now())
+def getatime():
+    return int(time.time())
+def gethtime():
+    today = date.today()
+    return str(time.strftime('%A', time.localtime(time.time()))+today.isoformat())
+def genlog(msg):
+    time = gethtime()
+    logfile = open(logfilename,"a")
+    logfile.write("["+time+"] - "+msg+"\n")
+    logfile.close()
+def loginit():
+    global logtime
+    global logfilename
+    logtime = gethtime()
+    logfilename = "./logs/"+logtime+".txt"
+    if not os.path.exists(os.path.join('logs',logtime+".txt")):
+        newfile = open(logfilename,'w')
+        newfile.write("\n")
+        newfile.close()
 
 def hashpass(password,salt):
     data = password + salt
@@ -210,7 +230,7 @@ def tokencheck(token):
 @app.route('/w/<pagename>')
 def pagerender(pagename):
     #logging.debug(request.headers["User-Agent"]+"  in  "+getip(request))
-    print(request.headers["User-Agent"]+"  in  "+getip(request))
+    genlog("user-get-page"+request.headers["User-Agent"]+"  in  "+getip(request)+"  page:"+pagename)
     form = SearchForm()
     useracl = "ipuser"
     if "login" in session:
@@ -401,7 +421,7 @@ def apiget(apitype,apikey):
             data = json.dumps({"success":False},indent=2)
         resp = app.response_class(response=data,status=200,mimetype='application/json')
         return resp
-    
+
 @app.route("/apiv1/<apitype>",methods=['POST'])
 def postapi(apitype):
     if not request.json or not 'apikey' in request.json or not 'pagename' in request.json or not 'data' in request.json:
@@ -597,8 +617,12 @@ def page_not_found(error):
 loadplugins()
 #print(searchengine("ki",10))
 #apprun
+
+
 if testmode:
     exit(0)
 if __name__ == "__main__":
+    loginit()
+    genlog("SERVERSTARTED")
     app.run(host='0.0.0.0',port=5555,debug=True)
 
