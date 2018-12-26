@@ -302,7 +302,7 @@ def editpage(pagename):
         data = "#None"
     form = """<form method="POST" class="form-control" id="editer">
     <textarea name="editform" wrap="soft" rows="20" cols="40" style="width:90%; id="editform">"""+data+"""</textarea>
-    <br>"""+str(form_.csrf_token)+"""<input class="btn btn-primary" type="submit" value="전송"></form><script>CKEDITOR.replace('editform',{customConfig: '/static/config/ckeditor_config.js'});</script>"""
+    <br>"""+str(form_.csrf_token)+"""<input class="btn btn-primary" type="submit" value="전송"></form><script>CKEDITOR.replace('editform',{customConfig: '/statics/config/ckeditor_config.js'});</script>"""
     if "login" in session:
         if "email" in session:
             if tokencheck(session['login']):
@@ -576,15 +576,20 @@ def loadplugins():
     plugin_list = os.listdir("./plugins")
     temp = []
     for filename in plugin_list:
-        if filename.endswith(".py"):
+        if filename.endswith(".init"):
             temp.append(filename)
-    
     plugin_list = temp
     for temp in plugin_list:
         time.sleep(0.4)
-        sys.stdout.write(''' * "'''+str(temp)+'''" plugin detected!\n''')
-        exec("from plugins import "+str(temp)[:-3])
-        sys.stdout.write(''' * "'''+str(temp)+'''" plugin loaded!\n''')
+        sys.stdout.write(''' * "'''+str(temp)[:-5]+'''" plugin detected!\n''')
+        try:
+            exec("import plugins."+str(temp)[:-5]+"."+str(temp)[:-5])
+            exec("app.register_blueprint(plugins."+str(temp)[:-5]+"."+str(temp)[:-5]+".plugin"+")")
+            sys.stdout.write(''' * "'''+str(temp)[:-5]+'''" plugin loaded!\n''')
+        except:
+            print(" * plugin "+str(temp)[:-5]+" load fail")
+        time.sleep(0.4)
+        
 
 @app.route('/statics/<path:file>')
 def static_host(file):
