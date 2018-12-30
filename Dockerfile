@@ -1,4 +1,4 @@
-FROM ubuntu:lastest
+FROM ubuntu:latest
 
 RUN sudo apt-get update
 RUN sudo apt install python3-pip python-dev
