@@ -6,3 +6,6 @@ venvstart.sh
 desktop.ini
 parser.out
 parsetab.py
+*.sqlite
+.vs/openkiwi/v15/.suo
+logs/*.txt
