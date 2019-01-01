@@ -19,7 +19,9 @@ from datetime import datetime, timedelta, timezone , date
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, AnyOf
-from flask_wtf.csrf import CSRFProtect
+#from flask_wtf.csrf import CSRFProtect
+
+
 from tool import check_ip
 
 if "TESTMODE" in os.environ and os.environ['TESTMODE'] == "TRUE":
@@ -59,8 +61,8 @@ secretkey = settingdic["secretkey"]
 app.secret_key = secretkey
 app.config["APPLICATION_ROOT"] = '/'
 wiki = "openkiwi"
-csrf = CSRFProtect(app)
-csrf.init_app(app)
+#csrf = CSRFProtect(app)
+#csrf.init_app(app)
 #logging.basicConfig(filename='./logs/debug.log',level=logging.DEBUG)
 curs.execute('create table if not exists user(userid text, pw text, acl text, date text, email text, login text, salt text)')
 curs.execute('create table if not exists backlink(title text,back text)')
@@ -302,7 +304,7 @@ def editpage(pagename):
         data = "#None"
     form = """<form method="POST" class="form-control" id="editer">
     <textarea name="editform" wrap="soft" rows="20" cols="40" style="width:90%; id="editform">"""+data+"""</textarea>
-    <br>"""+str(form_.csrf_token)+"""<input class="btn btn-primary" type="submit" value="전송"></form><script>CKEDITOR.replace('editform',{customConfig: '/statics/config/ckeditor_config.js'});</script>"""
+    <br>"""+"""<input class="btn btn-primary" type="submit" value="전송"></form><script>CKEDITOR.replace('editform',{customConfig: '/statics/config/ckeditor_config.js'});</script>"""
     if "login" in session:
         if "email" in session:
             if tokencheck(session['login']):
@@ -438,6 +440,10 @@ def postapi(apitype):
     else:
         apiacl = {"EDITRAW":False}
     if apitype == "EDITRAW":
+        if not "EDITRAW" in apiacl:
+            data = json.dumps({"success":False},indent=2)
+            resp = app.response_class(response=data,status=200,mimetype='application/json')
+            return resp
         if not apiacl["EDITRAW"]:
             data = json.dumps({"success":False},indent=2)
             resp = app.response_class(response=data,status=200,mimetype='application/json')
@@ -448,9 +454,9 @@ def postapi(apitype):
             if temp:
                 temp = temp[0][0]
                 curs.execute('select acl from user where userid = (?)',[temp])
-                useracl = curs.fatchall()[0][0]
+                useracl = curs.fetchall()[0][0]
                 if acltest(pagename,"edit",useracl) and acltest(pagename,"read",useracl):
-                    data = request.json[data]
+                    data = request.json["data"]
                     curs.execute("delete from cache where title = (?)",[pagename])
                     curs.execute("delete from pages where title = (?)",[pagename])
                     curs.execute("insert into pages values (?,?)",(pagename,data))
