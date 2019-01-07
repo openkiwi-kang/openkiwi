@@ -19,6 +19,7 @@ from datetime import datetime, timedelta, timezone , date
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import InputRequired, Length, AnyOf
+from itsdangerous import TimedJSONWebSignatureSerializer
 #from flask_wtf.csrf import CSRFProtect
 
 
@@ -29,13 +30,15 @@ if "TESTMODE" in os.environ and os.environ['TESTMODE'] == "TRUE":
 else:
     testmode = False
 
-
+epochnow = lambda : time.time()
 #loopstart
 class LoginForm(FlaskForm):
     username = StringField('username',validators=[InputRequired('A username is required!')])
     password = PasswordField('password',validators=[InputRequired('A password is required!')])
 class SearchForm(FlaskForm):
     keyword = StringField('Search',validators=[InputRequired()])
+
+
 #setup
 settingjson = open("./setting.json","r")
 settingdic = json.load(settingjson)
@@ -53,7 +56,6 @@ else:
         conn = sqlite3.connect(settingdic["dbname"]+".db",check_same_thread=False,isolation_level = None)
     else:
         print(">>>wrong setting error!")
-
 skin = "kiyee"
 curs = conn.cursor()
 app = Flask(__name__)
@@ -61,6 +63,33 @@ secretkey = settingdic["secretkey"]
 app.secret_key = secretkey
 app.config["APPLICATION_ROOT"] = '/'
 wiki = "openkiwi"
+randomfunc = lambda :codecs.encode(os.urandom(64), 'hex').decode()
+class auth:
+    def __init__(self,expire):
+        self.expire = expire
+        self.auth = TimedJSONWebSignatureSerializer(app.secret_key, expire)
+    def encode(self,username,usertype):
+        epochnow = time.time()
+        return self.auth.dumps({"token_type": "auth","username": username,"issued": epochnow,"usertype":usertype})
+    def check(self,token):
+        try:
+            return self.auth.loads(token)
+        except:
+            return False
+    def get_expire(self,token):
+        try:
+            this = self.auth.loads(token)["issued"] + float(self.expire) - epochnow()
+            return this
+        except:
+            return 0
+    def check_user_acl(self,token):
+        try:
+            this = self.auth.load(token)
+            return this["userttype"]
+        except:
+            return False
+            
+authfunc = auth(settingdic["oauth_expire"])
 #csrf = CSRFProtect(app)
 #csrf.init_app(app)
 #logging.basicConfig(filename='./logs/debug.log',level=logging.DEBUG)
@@ -71,6 +100,7 @@ curs.execute('create table if not exists acls(title text,acl text)')
 curs.execute('create table if not exists namespaceacl(namespace text,acl text)')
 curs.execute('create table if not exists apikey(key text,user text,acl text)')
 curs.execute('create table if not exists cache(title text,html text)')
+curs.execute('create table if not exists ban(type text,username text,block text,end text,reason text,band text)')
 
 conn.commit()
 print(" * load pagename list")
@@ -83,6 +113,42 @@ if pagelist:
 else:
     pagelist = []
 pagelist = pagelisttemp
+class hashlist:
+    def __init__(self):
+        self.hashtable = dict()
+    def append(self,data):
+        hashvar = hash(data)
+        if hashvar in self.hashtable:
+            self.hashtable[hashvar].append(data[-4:])
+        else:
+            self.hashtable[hashvar] = [data[-4:]]
+    def search(self,data):
+        hashvar = hash(data)
+        if hashvar in self.hashtable:
+            if data[-4:] in self.hashtable[hashvar]:
+                return True
+            else:
+                return False
+        else:
+            return False
+    def remove(self,data):
+        hashvar = hash(data)
+        if hashvar in self.hashtable:
+            if data[-4:] in self.hashtable[hashvar]:
+                self.hashtable[hashvar].remove(data[-4:])
+                return True
+            else:
+                return False
+        else:
+            return False
+    def print(self):
+        print(self.hashtable)
+curs.execute('''select username from ban where type="user"''')
+data = curs.fetchall()
+bantable = hashlist()
+for temp in data:
+    bantable.append(temp[0])
+bantable.print()
 print(" * load finish")
 def gettime():
     return str(datetime.now())
@@ -178,7 +244,7 @@ def login():
     if dbhash and salt:
         hash = hashpass(password,salt)
     else:
-        hash = "dsaghjkfhhajhfkhdsakjhjdfhjkhdsajkfhjfhkja"
+        return render_template(skin+'/error_passmatch-e.html')
 
     if hash == dbhash:
         rand = codecs.encode(os.urandom(32), 'hex').decode()
@@ -605,6 +671,50 @@ def static_host(file):
         return send_from_directory('./statics', file)
     else:
         return abort(404)
+@app.route('/api/v1/auth/authorize',methods=["POST"])
+def authorize_token():
+    username = request.json["username"]
+    pwd = request.json["pwd"]
+    curs.execute("SELECT salt from user where userid=(?)",[username])
+    salt = curs.fetchall()
+    if not salt:
+        return jsonify(str({"success": False,"error": "wrong login information"})),406
+    salt = salt[0][0]
+    curs.execute("SELECT pw from user where userid=(?)",[username])
+    password = curs.fetchall()[0][0]
+    if hashpass(str(pwd),salt) == password:
+        curs.execute("SELECT acl from user where userid=(?)",[username])
+        usertype = curs.fetchall()[0][0]
+        return jsonify({"success": True,"token": str(authfunc.encode(username,usertype))}),200
+    else:
+        return jsonify({"success": False,"error": "wrong login information"}),406
+    return jsonify({"success": False,"error": "Unknown Error"}),520
+
+@app.route('/api/v1/auth/authorize/testmytoken',methods=["POST"])
+def i_will_test_your_token_POST():
+    token = request.json["token"]
+    if jsonify(authfunc.check(token)):
+        return jsonify(authfunc.check(token))
+    return jsonify({"error":"token expired"})
+
+@app.route('/api/v1/auth/authorize/testmytoken',methods=["GET"])
+def i_will_test_your_token_GET():
+    if not "Authorization" in request.headers:
+        return jsonify({"success": False,"error": "wrong login information"}),406
+    token = request.headers["Authorization"].replace("Bearer ","")
+    return jsonify(authfunc.check(token))
+
+@app.route('/api/v1/auth/authorize/testmyexpire',methods=["POST"])
+def i_will_check_your_expire_POST():
+    token = request.json["token"]
+    return jsonify({"expire": authfunc.get_expire(token)})
+
+@app.route('/api/v1/auth/authorize/testmyexpire',methods=["GET"])
+def i_will_check_your_expire_GET():
+    if not "Authorization" in request.headers:
+        return jsonify({"success": False,"error": "wrong login information"}),406
+    token = request.headers["Authorization"].replace("Bearer ","")
+    return jsonify({"expire": authfunc.get_expire(token)})
 
 @app.route('/img/<path:file>')
 def image_host(file):
@@ -628,7 +738,6 @@ def page_not_found(error):
 loadplugins()
 #print(searchengine("ki",10))
 #apprun
-
 
 if testmode:
     exit(0)

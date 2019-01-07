@@ -6,5 +6,6 @@
     "passwd": "1234",
     "db": "sqlite3",
     "secretkey": "testforsecret",
-    "parser": "htmlwhitelist"
+    "parser": "htmlwhitelist",
+    "oauth_expire": 86400
 }

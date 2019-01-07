@@ -4,3 +4,4 @@ ply
 bleach
 watchdog
 uwsgi
+psycopg2
