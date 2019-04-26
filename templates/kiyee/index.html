@@ -1,88 +1,91 @@
 <!DOCTYPE html>
+
 <head>
-{% if userhead %}
-{{userhead}}
-{% endif %}
-<link rel="icon" href="/statics/image/favicon/OPENKIWI.png">
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha256-uXNHy6FK52Pb83SmU45mVAg7YECmr9Lwwu1zOz31j5c=" crossorigin="anonymous" />
+  {% if userhead %}
+  {{userhead}}
+  {% endif %}
+  <link rel="icon" href="/statics/image/favicon/OPENKIWI.png">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.css" integrity="sha256-uXNHy6FK52Pb83SmU45mVAg7YECmr9Lwwu1zOz31j5c=" crossorigin="anonymous" />
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/katex.min.js" integrity="sha256-34ADEQM6cIZ7chSRA07lN4aD5JM9IQoeIr2VamKDcT0=" crossorigin="anonymous"></script>
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0/contrib/auto-render.min.js" integrity="sha256-HkMrKMLKQk4t1R2ofMAcLz72fWM2sshnx6215U+LgU0=" crossorigin="anonymous"></script>
 -->
-<script src="https://unpkg.com/ionicons@4.4.2/dist/ionicons.js"></script>
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="/statics/js/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="/statics/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="/statics/css/kiyee.css">
-{%if editer%}
-<script src="//cdn.ckeditor.com/4.10.1/full/ckeditor.js"></script>
-{%endif%}
-<script async src="/statics/js/kiyee.js"></script>
-<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-{%if wikiname %}
-<title>{{wikiname}}</title>
-{% else %}
-<title>openkiwi</title>
-{% endif %}
+  <script src="https://unpkg.com/ionicons@4.4.2/dist/ionicons.js"></script>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="/statics/js/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="/statics/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/statics/css/kiyee.css">
+  {%if editer%}
+  <script src="//cdn.ckeditor.com/4.10.1/full/ckeditor.js"></script>
+  {%endif%}
+  <script async src="/statics/js/kiyee.js"></script>
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  {%if wikiname %}
+  <title>{{wikiname}}</title>
+  {% else %}
+  <title>openkiwi</title>
+  {% endif %}
 
-<!-- Bootstrap -->
-<link rel="stylesheet" href="/statics/css/bootstrap.css">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="/statics/css/bootstrap.css">
 
-<style>
-</style>
+  <style>
+  </style>
 </head>
-<body style="overflow-x:hidden;">
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-{%if wikiname %}
-  <a class="navbar-brand" href="/">{{wikiname}}</a>
-{% else %}
-  <a class="navbar-brand" href="/">openkiwi</a>
-{% endif %}
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
 
-  <div class="collapse navbar-collapse" id="navbarColor03">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="/RecentChanges">RecentChanges <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/RecentDiscuss">RecentDiscuss</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/random">random</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href='/user'>user</a>
-      </li>
-      {% if imageurl %}
-      <li class="nav-item">
-      <img src={{ imageurl }}>
-      </li>
-      {% else %}
-      <li class="nav-item">
-        <a class="nav-link" href='/login'>login</a>
-      </li>
-      {% endif %}
-    </ul>
-    <form class="form-inline" method="POST">
-      {{ form.keyword }}
-      <button class="btn btn-secondary my-2 my-sm-0" type="submit">
-        <ion-icon src="/statics/image/ionic/ios-search.svg"></ion-icon>Search
-      </button>
-    </form>
-  </div>
-</nav>
-{% block content %}
-<div class="wiki-text">
+<body style="overflow-x:hidden;">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    {%if wikiname %}
+    <a class="navbar-brand" href="/">{{wikiname}}</a>
+    {% else %}
+    <a class="navbar-brand" href="/">openkiwi</a>
+    {% endif %}
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03"
+      aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor03">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/RecentChanges">RecentChanges <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/RecentDiscuss">RecentDiscuss</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/random">random</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href='/user'>user</a>
+        </li>
+        {% if imageurl %}
+        <li class="nav-item">
+          <img src={{ imageurl }}>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href='/login'>login</a>
+        </li>
+        {% endif %}
+      </ul>
+      <form class="form-inline" method="POST">
+        {{ form.keyword }}
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">
+          <ion-icon src="/statics/image/ionic/ios-search.svg"></ion-icon>Search
+        </button>
+      </form>
+    </div>
+  </nav>
+  {% block content %}
+  <div class="wiki-text">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{ message }}
     </div>
     {% endfor %}
 
@@ -93,8 +96,9 @@
     {{data|safe}}
     {% else %}
     {% endif %}
-</div>
-{% endblock %}
+  </div>
+  {% endblock %}
 
 </body>
+
 </html>
