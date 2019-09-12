@@ -13,6 +13,6 @@ def index():
 <p>Comfortable is better than uncomfortable.</p>
 <p>Extension is important.</p>
 <p>We should always keep security in mind.</p>
-<p>Performance should be considered after security</p>
+<p>Performance should be considered after security.</p>
 </html>
     """
